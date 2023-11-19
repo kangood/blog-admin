@@ -1,0 +1,50 @@
+@import '../../styles/base.scss';
+@import '../../styles/style.scss';
+
+.LoginBox {
+  height: 100vh;
+  display: flex;
+
+  .leftBox {
+    width: 50%;
+    background-color: $themeColor1;
+    padding: 40px;
+    font-size: 70px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .rightBox {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    .avatarBox {
+      height: 80px;
+      width: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 20px;
+
+      img {
+        height: 100%;
+        width: 100%;
+      }
+    }
+
+    .loginBox {
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+
+      .btnBox {
+        display: flex;
+        justify-content: space-evenly;
+      }
+    }
+  }
+}

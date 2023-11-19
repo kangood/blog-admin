@@ -1,0 +1,70 @@
+@import '../../styles/base.scss';
+@import '../../styles/style.scss';
+
+.headerBtnBase {
+  position: absolute;
+  top: 50%;
+  z-index: 9999999;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  user-select: none;
+  font-size: 16px;
+  color: #4e5969;
+  background-color: #f2f3f5;
+  @extend .trans;
+}
+
+.headerBox {
+  position: relative;
+  height: 62px;
+  background-color: #fff;
+  border-bottom: 1px solid rgb(229, 230, 235);
+
+  .avatar {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translate(0, -50%);
+    height: 54px;
+    width: 54px;
+    border-radius: 50%;
+  }
+  .avatarText {
+    position: absolute;
+    left: calc(10px * 2 + 60px);
+    top: 50%;
+    transform: translate(0, -50%);
+    font-size: 18px;
+    font-family: 'dengxian';
+    font-weight: 700;
+
+    .userName {
+      color: $themeColor3;
+    }
+  }
+
+  .blogBtn {
+    right: calc(10px * 2 + 32px);
+    @extend .headerBtnBase;
+  }
+
+  .blogBtn:hover {
+    background-color: #e5e6eb;
+    cursor: pointer;
+  }
+
+  .logoutBtn {
+    right: 10px;
+    @extend .headerBtnBase;
+  }
+
+  .logoutBtn:hover {
+    background-color: $themeColor4_light;
+    cursor: pointer;
+  }
+}

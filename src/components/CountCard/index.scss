@@ -1,0 +1,35 @@
+@import '../../styles/base.scss';
+
+.cardTitle {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'dengxian';
+}
+
+.countCardBox {
+  width: calc((100% - 4 * 10px) / 5);
+  height: 100%;
+  background-color: #fff;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .key {
+    @extend .cardTitle;
+  }
+
+  .value {
+    font-size: 80px;
+    color: $themeColor3;
+  }
+
+  .loading {
+    font-size: 40px;
+  }
+}

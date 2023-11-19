@@ -1,0 +1,80 @@
+@import '../ChartCard/index.scss';
+@import '../../styles/base.scss';
+@import '../../styles/style.scss';
+
+.cardBox {
+  @extend .cardBase;
+  padding: 50px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    @extend .cardTitle;
+  }
+
+  .classesBox {
+    flex: 1;
+    margin-top: 8px;
+    overflow-y: auto;
+
+    .classItem {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #e5e6eb;
+
+      .count {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        line-height: 30px;
+        background-color: #e5e6eb;
+        border-radius: 50%;
+        color: rgb(134, 144, 156);
+        user-select: none;
+        margin-right: 4px;
+      }
+      .classTextBox {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .classText {
+          height: 26px;
+          line-height: 26px;
+          display: inline-block;
+          border-radius: 2px;
+          user-select: none;
+          padding: 0 6px;
+          cursor: pointer;
+          @extend .trans;
+        }
+        .classText:hover {
+          background-color: $themeColor3_light;
+          color: #fff;
+        }
+      }
+      .classBtn {
+        width: 30px;
+        height: 30px;
+        margin-left: 4px;
+      }
+    }
+    .classItem:last-child {
+      border: none;
+    }
+  }
+
+  .classesBox::-webkit-scrollbar {
+    display: none;
+  }
+
+  .classLoading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    color: $themeColor3;
+  }
+}

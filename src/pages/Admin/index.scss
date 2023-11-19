@@ -1,0 +1,81 @@
+@import '../../styles/base.scss';
+@import '../../styles/style.scss';
+
+.adminBox {
+  height: 100vh;
+  background-color: #f2f3f5;
+
+  .mainContent {
+    height: calc(100% - 62px);
+    display: flex;
+
+    .leftNav {
+      position: relative;
+      height: 100%;
+      width: 150px;
+      box-sizing: border-box;
+      padding: 10px;
+      background-color: #fff;
+      color: rgb(78, 89, 105);
+      border-right: 1px solid rgb(229, 230, 235);
+
+      .liItem {
+        margin: 10px 0;
+        height: 40px;
+        font-size: 15px;
+        user-select: none;
+        border-radius: 2px;
+
+        .navItem {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          height: 100%;
+          color: rgb(78, 89, 105);
+
+          .navIcon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+
+        .navItem:hover,
+        .navItemActive {
+          background-color: #f2f3f5;
+          cursor: pointer;
+        }
+
+        .navItemActive {
+          cursor: default !important;
+          color: $themeColor3;
+        }
+      }
+
+      .turnOldVer {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        // width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40px;
+        font-size: 15px;
+        color: rgb(78, 89, 105);
+      }
+      .turnOldVer:hover {
+        background-color: #f2f3f5;
+      }
+    }
+
+    .rightContent {
+      width: calc(100% - 150px);
+      height: 100%;
+      padding: 10px;
+    }
+  }
+}

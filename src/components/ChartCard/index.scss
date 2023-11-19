@@ -1,0 +1,28 @@
+@import '../CountCard/index.scss';
+
+.cardBase {
+  position: relative;
+  height: 100%;
+  background-color: #fff;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.chartBox {
+  @extend .cardBase;
+
+  .loading {
+    font-size: 60px;
+    color: $themeColor3_light;
+  }
+
+  .chartTitle {
+    @extend .cardTitle;
+  }
+}
+
+.loadingCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,0 +1,11 @@
+@import '../../styles/base.scss';
+
+.loadingBox {
+  height: calc(100vh - 62px - 10px * 2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  color: $themeColor3_light;
+  font-size: 50px;
+}

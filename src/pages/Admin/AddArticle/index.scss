@@ -1,0 +1,60 @@
+@import '../../../styles/base.scss';
+@import '../../../styles/style.scss';
+
+.addArticleHeader {
+  height: 102px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 2px;
+  margin-bottom: 10px;
+
+  .top,
+  .bottom {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .top {
+    margin-bottom: 10px;
+
+    .chineseTitle {
+      flex: 1;
+      margin-right: 10px;
+    }
+  }
+
+  .bottom {
+    .classText,
+    .tags,
+    .time {
+      flex: 1;
+    }
+
+    .tags {
+      flex: 2;
+      margin: 0 10px;
+    }
+  }
+}
+
+.contentEdit {
+  height: calc(100% - (102px + 10px));
+  display: flex;
+
+  .markedEdit {
+    height: 100%;
+    width: 50%;
+    border-radius: 2px;
+    overflow: hidden;
+    background-color: #fff;
+    overflow-y: auto;
+    @extend .scroll;
+  }
+
+  .input {
+    margin-right: 10px;
+    padding: 30px;
+    font-size: 18px;
+  }
+}

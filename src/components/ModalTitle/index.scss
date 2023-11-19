@@ -1,0 +1,23 @@
+@import '../../styles/base.scss';
+
+.ModalTitleBox {
+  height: 34px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  .ModalTitleCustom {
+    height: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $themeColor3;
+    color: #fff;
+    padding: 0 6px;
+    margin-right: 2px;
+    border-radius: 2px;
+    font-size: 16px !important;
+    font-family: 'dengxian' !important;
+    font-weight: 400;
+  }
+}

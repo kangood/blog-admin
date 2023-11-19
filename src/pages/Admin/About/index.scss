@@ -1,0 +1,14 @@
+.aboutBox {
+  height: 100%;
+  display: flex;
+
+  .left {
+    margin-right: 10px;
+  }
+
+  .left,
+  .right {
+    width: 50%;
+    height: 100%;
+  }
+}
