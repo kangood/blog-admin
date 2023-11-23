@@ -14,10 +14,11 @@ import { selectClass, selectTag } from '@/redux/selectors';
 import { resetClasses, setClasses } from '@/redux/slices/classes';
 import { resetDraftData } from '@/redux/slices/drafts';
 import { setTags } from '@/redux/slices/tags';
+import { ArticleInputType, ArticleOutputType, useListArticle } from '@/services/article';
+import { useGetAllTag } from '@/services/tag';
 import { deleteDataAPI } from '@/utils/apis/deleteData';
 import { getDataAPI } from '@/utils/apis/getData';
 import { getWhereDataAPI } from '@/utils/apis/getWhereData';
-import { _, isAdmin } from '@/utils/cloudBase';
 import { defaultPageSize, failText, siteTitle, visitorText } from '@/utils/constant';
 import { DB } from '@/utils/dbConfig';
 import { classCountChange, getAfterDeletedPage, isSubset } from '@/utils/functions';
@@ -65,144 +66,123 @@ const Article: React.FC = () => {
     }
   );
 
-  const { loading: tagLoading, run: tagsRun } = useRequest(() => getDataAPI(DB.Tag), {
-    retryCount: 3,
-    manual: true,
-    onSuccess: res => {
-      dispatch(setTags(res.data));
-    }
-  });
 
   useMount(() => {
     if (!classes.isDone) {
       classesRun();
     }
-    if (!tags.isDone) {
-      tagsRun();
-    }
   });
 
-  const {
-    data: articleData,
-    total: articleTotal,
-    loading: articleLoading,
-    handleDelete,
-    dataRun,
-    totalRun
-  } = useTableData({
-    type: DB.Article,
-    DBName: DB.Article,
-    page,
-    setPage,
-    where: { post: _.eq(true) },
-    classesRun
-  });
+  const [articleListParams, setArticleListParams] = useState<ArticleInputType>();
+  const { data: articleData, isLoading: articleLoading } = useListArticle(articleListParams);
+  const { tagList, tagIsLoading } = useGetAllTag();
 
-  useUpdateData([
-    {
-      key: 'updated',
-      run: () => {
-        dataRun();
-        totalRun();
-      }
-    },
-    {
-      key: 'clearOther',
-      run: () => {
-        dispatch(resetDraftData());
-      }
-    }
-  ]);
+  const searchRun = () => {
+    setArticleListParams({tags: searchTag.join(','), title: searchTitle});
+  }
 
-  const { run: searchRun, loading: searchLoading } = useRequest(
-    () => getWhereDataAPI(DB.Article, { post: _.eq(true) }),
-    {
-      manual: true,
-      retryCount: 3,
-      throttleWait: 1000,
-      onSuccess: res => {
-        const result = res.data.filter(
-          ({
-            title,
-            classes,
-            tags
-          }: {
-            title: string;
-            classes: string;
-            tags: string[];
-          }) => {
-            const titleCondition =
-              title.toLowerCase().indexOf((searchTitle || '').toLowerCase()) !== -1;
-            const tagCondition = isSubset(tags, searchTag);
-            const classCondition = searchClass
-              ? classes === (searchClass === '未分类' ? '' : searchClass)
-              : true;
-            return titleCondition && tagCondition && classCondition;
-          }
-        );
-        setSearchData(result);
-        setShowSearchData(true);
-        Message.success('搜索成功！');
-      }
-    }
-  );
+  const resetSearch = () => {
+    clearSearch();
+    setArticleListParams({});
+  }
+
+  // useUpdateData([
+  //   {
+  //     key: 'updated',
+  //     run: () => {
+  //       dataRun();
+  //       totalRun();
+  //     }
+  //   },
+  //   {
+  //     key: 'clearOther',
+  //     run: () => {
+  //       dispatch(resetDraftData());
+  //     }
+  //   }
+  // ]);
+
+  // const { run: searchRun, loading: searchLoading } = useRequest(
+  //   () => getWhereDataAPI(DB.Article, { post: _.eq(true) }),
+  //   {
+  //     manual: true,
+  //     retryCount: 3,
+  //     throttleWait: 1000,
+  //     onSuccess: res => {
+  //       const result = res.data.filter(
+  //         ({
+  //           title,
+  //           classes,
+  //           tags
+  //         }: {
+  //           title: string;
+  //           classes: string;
+  //           tags: string[];
+  //         }) => {
+  //           const titleCondition =
+  //             title.toLowerCase().indexOf((searchTitle || '').toLowerCase()) !== -1;
+  //           const tagCondition = isSubset(tags, searchTag);
+  //           const classCondition = searchClass
+  //             ? classes === (searchClass === '未分类' ? '' : searchClass)
+  //             : true;
+  //           return titleCondition && tagCondition && classCondition;
+  //         }
+  //       );
+  //       setSearchData(result);
+  //       setShowSearchData(true);
+  //       Message.success('搜索成功！');
+  //     }
+  //   }
+  // );
 
   useMount(() => {
     if (searchTitle || searchClass || searchTag.length) {
-      searchRun();
+      // searchRun();
       setShowSearchData(true);
     }
   });
 
-  const handleEdit = (id: string) => {
-    navigate(`/admin/addArticle?id=${id}&from=article`);
+  const handleEdit = ({id, title, fileName, tags, classes, createdAt}: ArticleOutputType) => {
+    navigate(`/admin/addArticle?id=${id}&fileName=${fileName}&title=${title}&tags=${tags}&classes=${classes}&createdAt=${createdAt}&from=article`);
   };
 
   const search = () => {
-    if (!searchTitle && !searchClass && !searchTag.length) {
-      Message.info('请选择搜索内容！');
-      return;
-    }
     setPage(1);
     searchRun();
   };
 
-  const handleDeleteSearch = (id: string, { page, setPage }: DeleteProps) => {
-    if (!isAdmin()) {
-      Message.warning(visitorText);
-      return;
-    }
+  const handleDeleteSearch = (id: number, { page, setPage }: DeleteProps) => {
 
-    deleteDataAPI(DB.Article, id).then(res => {
-      if (!res.success && !res.permission) {
-        Message.warning(visitorText);
-      } else if (res.success && res.permission) {
-        Message.success('删除成功！');
-        const newSearchData = searchData.filter(({ _id }: { _id: string }) => _id !== id);
-        const classText = searchData.filter(({ _id }: { _id: string }) => _id === id)[0]
-          .classes;
-        classCountChange(classText, 'min', () => {
-          dispatch(resetClasses());
-        });
-        flushSync(() => setSearchData(newSearchData));
-        flushSync(() => {
-          dispatch(reduxMap[DB.Article].dataResetReducer());
-          setPage(getAfterDeletedPage(searchData.length, page, defaultPageSize));
-        });
-        flushSync(() => {
-          dataRun();
-          totalRun();
-        });
-      } else {
-        Message.warning(failText);
-      }
-    });
+    // deleteDataAPI(DB.Article, id).then(res => {
+    //   if (!res.success && !res.permission) {
+    //     Message.warning(visitorText);
+    //   } else if (res.success && res.permission) {
+    //     Message.success('删除成功！');
+    //     const newSearchData = searchData.filter(({ _id }: { _id: string }) => _id !== id);
+    //     const classText = searchData.filter(({ _id }: { _id: string }) => _id === id)[0]
+    //       .classes;
+    //     classCountChange(classText, 'min', () => {
+    //       dispatch(resetClasses());
+    //     });
+    //     flushSync(() => setSearchData(newSearchData));
+    //     flushSync(() => {
+    //       dispatch(reduxMap[DB.Article].dataResetReducer());
+    //       setPage(getAfterDeletedPage(searchData.length, page, defaultPageSize));
+    //     });
+    //     flushSync(() => {
+    //       dataRun();
+    //       totalRun();
+    //     });
+    //   } else {
+    //     Message.warning(failText);
+    //   }
+    // });
   };
 
   const columns = useColumns({
     showSearchData,
     handleEdit,
-    handleDelete,
+    // handleDelete,
     handleDeleteSearch,
     deleteProps: {
       page,
@@ -255,10 +235,10 @@ const Article: React.FC = () => {
           unmountOnExit={false}
           value={searchTag}
           onChange={value => setSearchTag(value)}
-          disabled={tagLoading}
-          options={tags.value.map(({ tag }: { tag: string }) => ({
-            value: tag,
-            label: tag
+          disabled={tagIsLoading}
+          options={tagList.map(item => ({
+            value: item.content,
+            label: item.content
           }))}
         />
       </div>
@@ -275,7 +255,7 @@ const Article: React.FC = () => {
           type='primary'
           size='large'
           onClick={() => {
-            flushSync(() => clearSearch());
+            flushSync(() => resetSearch());
             flushSync(() => setPage(1));
             setShowSearchData(false);
           }}
@@ -295,14 +275,14 @@ const Article: React.FC = () => {
         render={render}
       />
       <MyTable
-        loading={searchLoading || articleLoading}
+        loading={articleLoading}
         columns={columns}
         data={
           showSearchData
             ? searchData.slice(defaultPageSize * (page - 1), defaultPageSize * page)
-            : articleData
+            : articleData?.items ?? []
         }
-        total={showSearchData ? searchData.length : articleTotal}
+        total={showSearchData ? searchData.length : articleData?.meta.totalItems ?? 0}
         page={page}
         setPage={setPage}
       />

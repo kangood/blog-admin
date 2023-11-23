@@ -35,7 +35,7 @@ export const useGetAllTag = () => {
     })
     return {
         tagList: data ? data?.items : [],
-        isLoading
+        tagIsLoading: isLoading
     };
 };
 

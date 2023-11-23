@@ -3,13 +3,14 @@ import dayjs from 'dayjs';
 import React from 'react';
 
 import TableTag from '@/components/TableTag';
+import { ArticleOutputType } from '@/services/article';
 import { DeleteProps } from '@/utils/hooks/useTableData';
 
 interface Props {
   showSearchData: boolean;
-  handleEdit: (id: string) => void;
-  handleDelete: (id: string, props: DeleteProps) => void;
-  handleDeleteSearch: (id: string, props: DeleteProps) => void;
+  handleEdit: (record: ArticleOutputType) => void;
+  handleDelete?: (id: number, props: DeleteProps) => void;
+  handleDeleteSearch: (id: number, props: DeleteProps) => void;
   deleteProps: DeleteProps;
 }
 
@@ -26,8 +27,8 @@ export const useColumns = ({
     render: (title: string) => <strong>{title}</strong>
   },
   {
-    title: '发布日期',
-    dataIndex: 'date',
+    title: '发布时间',
+    dataIndex: 'createdAt',
     render: (timeLine: string) => <>{dayjs(timeLine).format('YYYY-MM-DD HH:mm:ss')}</>
   },
   {
@@ -44,19 +45,19 @@ export const useColumns = ({
   },
   {
     title: '操作',
-    render: (_: any, { _id, url }: { _id: string; url: string }) => (
+    render: (_: any, record: ArticleOutputType) => (
       <>
         <Button
           type='primary'
           style={{ marginRight: 10 }}
-          onClick={() => window.open(url)}
+          onClick={() => window.open(record.url)}
         >
           查看
         </Button>
         <Button
           type='primary'
           style={{ marginRight: 10 }}
-          onClick={() => handleEdit(_id)}
+          onClick={() => handleEdit(record)}
         >
           编辑
         </Button>
@@ -64,9 +65,9 @@ export const useColumns = ({
           position='br'
           title='确定要删除该文章吗？'
           onOk={() => {
-            showSearchData
-              ? handleDeleteSearch(_id, deleteProps)
-              : handleDelete(_id, deleteProps);
+            // showSearchData ? 
+              handleDeleteSearch(record.id, deleteProps)
+              // : handleDelete(_id, deleteProps);
           }}
           okText='Yes'
           cancelText='No'

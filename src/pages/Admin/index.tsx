@@ -34,9 +34,6 @@ const Admin: React.FC = () => {
               </div>
             ) : null;
           })}
-          <a href={oldVersionUrl} className={s.turnOldVer}>
-            返回旧版
-          </a>
         </nav>
         {/* 右侧内容区域= */}
         <div className={s.rightContent}>

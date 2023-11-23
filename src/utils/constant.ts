@@ -15,7 +15,7 @@ export const visitorPwd = 'test123123';
 export const visitorAvatar = 'https://img.lzxjack.top:99/202304061850910.webp';
 
 // 站点名称
-export const AppName = '飞鸟小站';
+export const AppName = "Kangod's Blog";
 
 // 博客主页url
 export const blogUrl = 'https://lzxjack.top';
@@ -24,7 +24,7 @@ export const blogUrl = 'https://lzxjack.top';
 export const githubUrl = 'https://github.com/lzxjack/blog-admin';
 
 // 页面title
-export const siteTitle = '飞鸟小站后台管理';
+export const siteTitle = "Kangod's Blog后台管理";
 
 // 数据缓存时间
 export const staleTime = 180000;

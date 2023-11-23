@@ -2,7 +2,7 @@ import { Button, Input, Message, Select } from '@arco-design/web-react';
 import { useMount, useRequest, useTitle } from 'ahooks';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -10,12 +10,13 @@ import MarkDown from '@/components/MarkDown';
 import { selectClass, selectTag } from '@/redux/selectors';
 import { resetClasses, setClasses } from '@/redux/slices/classes';
 import { setTags } from '@/redux/slices/tags';
+import { getMdFileData } from '@/services/article';
+import { useGetAllTag } from '@/services/tag';
 import { addDataAPI } from '@/utils/apis/addData';
 import { getDataAPI } from '@/utils/apis/getData';
 import { getDataByIdAPI } from '@/utils/apis/getDataById';
 import { getWhereDataAPI } from '@/utils/apis/getWhereData';
 import { updateDataAPI } from '@/utils/apis/updateData';
-import { _, isAdmin } from '@/utils/cloudBase';
 import { failText, siteTitle, visitorText } from '@/utils/constant';
 import { DB } from '@/utils/dbConfig';
 import {
@@ -33,38 +34,51 @@ const AddArticle: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // 同步左右两边屏幕滚动，让它们一直处于同等位置
   const { leftRef, rightRef, handleScrollRun } = useScrollSync();
 
-  const [title, setTitle] = useState('');
-  const [titleEng, setTitleEng] = useState('');
-  const [classText, setClassText] = useState('');
-  const [tags, setLocalTags] = useState<string[]>([]);
-  const [date, setDate] = useState(dayjs().format('YYYY-MM-DD HH:mm:ss'));
-  const [content, setContent] = useState('');
-
-  // 文章/草稿 更新逻辑
+  // 接收跳转的前一页面传值（列表数据）为默认值
   const id = searchParams.get('id');
   const from = searchParams.get('from');
-
+  const fileName = searchParams.get('fileName');
+  // 使用useState可修改传值
+  const [titleEng, setTitleEng] = useState('');
   const [defaultClassText, setDefaultClassText] = useState('');
+  const [localTitle, setLocalTitle] = useState(searchParams.get('title') || '');
+  const [localClasses, setLocalClasses] = useState(searchParams.get('classes') || '');
+  const [localTags, setLocalTags] = useState<string[]>(searchParams.get('tags')?.split(',') || []);
+  const createdAt = searchParams.get('createdAt');
+  const dateInitialValue = createdAt ? dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss');
+  const [localDate, setLocalDate] = useState(dateInitialValue);
 
-  useRequest(() => getDataByIdAPI(DB.Article, id || ''), {
-    retryCount: 3,
-    onSuccess: res => {
-      if (!res.data.length) return;
-      const { title, titleEng, classes: classText, tags, date, content } = res.data[0];
-      setTitle(title);
-      setTitleEng(titleEng);
-      setClassText(classText);
-      setLocalTags(tags);
-      setDate(dayjs(date).format('YYYY-MM-DD HH:mm:ss'));
-      setContent(content);
-      setDefaultClassText(classText);
+  // 请求 API 获取md文件数据
+  const { data: content } = getMdFileData(fileName!);
+  const [localContent, setLocalContent] = useState<string>('');
+  // 监听content变化，直到有值为止，防止异步请求结果返回，晚于初始页面渲染的时间
+  useEffect(() => {
+    if (content) {
+      setLocalContent(typeof content === 'string' ? content : '');
     }
-  });
+  }, [content]);
+
+  // useRequest(() => getDataByIdAPI(DB.Article, id || ''), {
+  //   retryCount: 3,
+  //   onSuccess: res => {
+  //     if (!res.data.length) return;
+  //     const { title, titleEng, classes: classText, tags, date, content } = res.data[0];
+  //     setTitle(title);
+  //     setTitleEng(titleEng);
+  //     setClassText(classText);
+  //     setLocalTags(tags);
+  //     setDate(dayjs(date).format('YYYY-MM-DD HH:mm:ss'));
+  //     setContent(content);
+  //     setDefaultClassText(classText);
+  //   }
+  // });
+
 
   const reduxClasses = useSelector(selectClass);
-  const reduxTags = useSelector(selectTag);
+  const { tagList, tagIsLoading } = useGetAllTag();
 
   const dispatch = useDispatch();
 
@@ -79,20 +93,9 @@ const AddArticle: React.FC = () => {
     }
   );
 
-  const { loading: tagLoading, run: tagsRun } = useRequest(() => getDataAPI(DB.Tag), {
-    retryCount: 3,
-    manual: true,
-    onSuccess: res => {
-      dispatch(setTags(res.data));
-    }
-  });
-
   useMount(() => {
     if (!reduxClasses.isDone) {
       classesRun();
-    }
-    if (!reduxTags.isDone) {
-      tagsRun();
     }
   });
 
@@ -132,7 +135,7 @@ const AddArticle: React.FC = () => {
 
   const isArticleUnique = async () => {
     const res = await getWhereDataAPI(DB.Article, {
-      titleEng: _.eq(titleEng)
+      // titleEng: _.eq(titleEng)
     });
     const sameEngInArticles = res.data.filter(({ _id }: { _id: string }) => _id !== id);
     return !sameEngInArticles.length;
@@ -159,7 +162,7 @@ const AddArticle: React.FC = () => {
   //     存草稿：
 
   const postArticle = async (type: 'post' | 'draft') => {
-    if (!title || !titleEng || !date || !content) {
+    if (!localTitle || !titleEng || !localDate || !localContent) {
       Message.info('请至少输入中英文标题、时间、正文！');
       return;
     }
@@ -167,22 +170,18 @@ const AddArticle: React.FC = () => {
       Message.info('英文标题不能含有中文字符！');
       return;
     }
-    if (!isValidDateString(date, true)) {
+    if (!isValidDateString(localDate, true)) {
       Message.info('日期字符串不合法！');
-      return;
-    }
-    if (!isAdmin()) {
-      Message.warning(visitorText);
       return;
     }
 
     const data = {
-      title,
+      localTitle,
       titleEng,
-      content,
-      tags,
-      classes: classText,
-      date: new Date(date).getTime(),
+      localContent,
+      localTags,
+      localClasses: localClasses,
+      date: new Date(localDate).getTime(),
       url: `https://lzxjack.top/post?title=${titleEng}`,
       post: type === 'post'
     };
@@ -197,7 +196,7 @@ const AddArticle: React.FC = () => {
       addData(type, data);
       if (type === 'post') {
         // 发布
-        classCountChange(classText, 'add', () => {
+        classCountChange(localClasses, 'add', () => {
           dispatch(resetClasses());
         });
       } else {
@@ -210,8 +209,8 @@ const AddArticle: React.FC = () => {
         // 文章页进来
         if (type === 'post') {
           // 发布
-          if (classText !== defaultClassText) {
-            classCountChange(classText, 'add', () => {
+          if (localClasses !== defaultClassText) {
+            classCountChange(localClasses, 'add', () => {
               dispatch(resetClasses());
             });
             classCountChange(defaultClassText, 'min', () => {
@@ -230,7 +229,7 @@ const AddArticle: React.FC = () => {
         // 草稿页进来
         if (type === 'post') {
           // 发布
-          classCountChange(classText, 'add', () => {
+          classCountChange(localClasses, 'add', () => {
             dispatch(resetClasses());
           });
         } else {
@@ -250,8 +249,8 @@ const AddArticle: React.FC = () => {
             addBefore='中文标题'
             allowClear
             size='large'
-            value={title}
-            onChange={value => setTitle(value)}
+            value={localTitle}
+            onChange={value => setLocalTitle(value)}
           />
           <Input
             style={{ width: 400, marginRight: 10 }}
@@ -282,18 +281,18 @@ const AddArticle: React.FC = () => {
           <Select
             addBefore='分类'
             size='large'
-            className={s.classText}
+            className={s.classes}
             allowCreate={false}
             showSearch
             allowClear
             unmountOnExit={false}
-            value={classText}
-            onChange={value => setClassText(value)}
+            value={localClasses}
+            onChange={value => setLocalClasses(value)}
             disabled={classLoading}
             options={reduxClasses.value.map(
-              ({ class: classText }: { class: string }) => ({
-                value: classText,
-                label: classText
+              ({ class: localClasses }: { class: string }) => ({
+                value: localClasses,
+                label: localClasses
               })
             )}
           />
@@ -307,19 +306,19 @@ const AddArticle: React.FC = () => {
             showSearch
             allowClear
             unmountOnExit={false}
-            value={tags}
+            value={localTags}
             onChange={value => setLocalTags(value)}
-            disabled={tagLoading}
-            options={reduxTags.value.map(({ tag }: { tag: string }) => ({
-              value: tag,
-              label: tag
+            disabled={tagIsLoading}
+            options={tagList.map(item => ({
+              value: item.content,
+              label: item.content
             }))}
           />
           <Input
             addBefore='时间'
-            value={date}
+            value={localDate}
             placeholder='YYYY-MM-DD HH:mm:ss'
-            onChange={value => setDate(value)}
+            onChange={value => setLocalDate(value)}
             className={s.time}
             allowClear
             size='large'
@@ -330,14 +329,14 @@ const AddArticle: React.FC = () => {
         <textarea
           ref={leftRef}
           className={classNames(s.markedEdit, s.input)}
-          value={content}
-          onChange={e => setContent(e.target.value)}
+          value={localContent}
+          onChange={e => setLocalContent(e.target.value)}
           onScroll={handleScrollRun}
         />
         <MarkDown
           ref={rightRef}
           className={s.markedEdit}
-          content={content}
+          content={localContent}
           onScroll={handleScrollRun}
         />
       </div>

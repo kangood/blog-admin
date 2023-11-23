@@ -31,7 +31,7 @@ const TagCard: React.FC = () => {
   const [newTag, setNewTag, resetNewTag] = useResetState('');
 
   // API hooks
-  const { tagList, isLoading } = useGetAllTag();
+  const { tagList, tagIsLoading } = useGetAllTag();
   const { mutateAsync: deleteMutateAsync } = useDeleteTag();
   const { mutateAsync: createMutateAsync } = useCreateTag();
   const { mutateAsync: updateMutateAsync } = useUpdateTag();
@@ -115,9 +115,9 @@ const TagCard: React.FC = () => {
           onChange={(value: string) => setNewTag(value)}
           onSearch={addNewTag}
         />
-        <div className={classNames(s.tagsBox, { [s.tagLoading]: isLoading })}>
+        <div className={classNames(s.tagsBox, { [s.tagLoading]: tagIsLoading })}>
           {/* 标签列表 */}
-          {isLoading ? (
+          {tagIsLoading ? (
             <IconLoading />
           ) : (
             tagList.map(
