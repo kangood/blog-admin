@@ -1,32 +1,19 @@
 import './index.custom.scss';
 
-import { Button, Input, Message, Select } from '@arco-design/web-react';
-import { useMount, useRequest, useTitle } from 'ahooks';
+import { Button, Input, Select } from '@arco-design/web-react';
+import { useTitle } from 'ahooks';
 import React, { useState } from 'react';
-import { flushSync } from 'react-dom';
 import { BiBrushAlt, BiSearch } from 'react-icons/bi';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import MyTable from '@/components/MyTable';
 import PageHeader from '@/components/PageHeader';
-import { selectClass, selectTag } from '@/redux/selectors';
-import { resetClasses, setClasses } from '@/redux/slices/classes';
-import { resetDraftData } from '@/redux/slices/drafts';
-import { setTags } from '@/redux/slices/tags';
-import { ArticleInputType, ArticleOutputType, useListArticle } from '@/services/article';
+import { ArticleInputType, ArticleOutputType, useDeleteArticle, useListArticle } from '@/services/article';
+import { useGetAllClasses } from '@/services/classes';
 import { useGetAllTag } from '@/services/tag';
-import { deleteDataAPI } from '@/utils/apis/deleteData';
-import { getDataAPI } from '@/utils/apis/getData';
-import { getWhereDataAPI } from '@/utils/apis/getWhereData';
-import { defaultPageSize, failText, siteTitle, visitorText } from '@/utils/constant';
-import { DB } from '@/utils/dbConfig';
-import { classCountChange, getAfterDeletedPage, isSubset } from '@/utils/functions';
+import { siteTitle } from '@/utils/constant';
 import { useMyParams } from '@/utils/hooks/useMyParams';
 import { usePage } from '@/utils/hooks/usePage';
-import { DeleteProps, useTableData } from '@/utils/hooks/useTableData';
-import { useUpdateData } from '@/utils/hooks/useUpdateData';
-import { reduxMap } from '@/utils/reduxMap';
 
 import { Title } from '../titleConfig';
 import { useColumns } from './config';
@@ -37,9 +24,8 @@ const Article: React.FC = () => {
   const navigate = useNavigate();
 
   const { page, setPage } = usePage();
-  const [showSearchData, setShowSearchData] = useState(false);
-  const [searchData, setSearchData] = useState<any[]>([]);
 
+  // 搜索栏参数状态封装
   const {
     searchTitle,
     searchClass,
@@ -50,144 +36,44 @@ const Article: React.FC = () => {
     clearSearch
   } = useMyParams();
 
-  const classes = useSelector(selectClass);
-  const tags = useSelector(selectTag);
-
-  const dispatch = useDispatch();
-
-  const { loading: classLoading, run: classesRun } = useRequest(
-    () => getDataAPI(DB.Class),
-    {
-      retryCount: 3,
-      manual: true,
-      onSuccess: res => {
-        dispatch(setClasses(res.data));
-      }
-    }
-  );
-
-
-  useMount(() => {
-    if (!classes.isDone) {
-      classesRun();
-    }
-  });
-
+  // 后端 api 请求 hooks
   const [articleListParams, setArticleListParams] = useState<ArticleInputType>();
-  const { data: articleData, isLoading: articleLoading } = useListArticle(articleListParams);
+  const { data: articleData, isLoading: articleIsLoading } = useListArticle(articleListParams);
   const { tagList, tagIsLoading } = useGetAllTag();
+  const { classesList, classesIsLoading } = useGetAllClasses();
+  const { mutateAsync } = useDeleteArticle();
 
-  const searchRun = () => {
-    setArticleListParams({tags: searchTag.join(','), title: searchTitle});
-  }
-
-  const resetSearch = () => {
-    clearSearch();
-    setArticleListParams({});
-  }
-
-  // useUpdateData([
-  //   {
-  //     key: 'updated',
-  //     run: () => {
-  //       dataRun();
-  //       totalRun();
-  //     }
-  //   },
-  //   {
-  //     key: 'clearOther',
-  //     run: () => {
-  //       dispatch(resetDraftData());
-  //     }
-  //   }
-  // ]);
-
-  // const { run: searchRun, loading: searchLoading } = useRequest(
-  //   () => getWhereDataAPI(DB.Article, { post: _.eq(true) }),
-  //   {
-  //     manual: true,
-  //     retryCount: 3,
-  //     throttleWait: 1000,
-  //     onSuccess: res => {
-  //       const result = res.data.filter(
-  //         ({
-  //           title,
-  //           classes,
-  //           tags
-  //         }: {
-  //           title: string;
-  //           classes: string;
-  //           tags: string[];
-  //         }) => {
-  //           const titleCondition =
-  //             title.toLowerCase().indexOf((searchTitle || '').toLowerCase()) !== -1;
-  //           const tagCondition = isSubset(tags, searchTag);
-  //           const classCondition = searchClass
-  //             ? classes === (searchClass === '未分类' ? '' : searchClass)
-  //             : true;
-  //           return titleCondition && tagCondition && classCondition;
-  //         }
-  //       );
-  //       setSearchData(result);
-  //       setShowSearchData(true);
-  //       Message.success('搜索成功！');
-  //     }
-  //   }
-  // );
-
-  useMount(() => {
-    if (searchTitle || searchClass || searchTag.length) {
-      // searchRun();
-      setShowSearchData(true);
-    }
-  });
-
-  const handleEdit = ({id, title, fileName, tags, classes, createdAt}: ArticleOutputType) => {
-    navigate(`/admin/addArticle?id=${id}&fileName=${fileName}&title=${title}&tags=${tags}&classes=${classes}&createdAt=${createdAt}&from=article`);
-  };
-
-  const search = () => {
+  // 条件查询，修改搜索数据之后重新调用 API
+  const onSearch = () => {
     setPage(1);
-    searchRun();
+    setArticleListParams({tags: searchTag.join(','), title: searchTitle, classes: searchClass});
   };
 
-  const handleDeleteSearch = (id: number, { page, setPage }: DeleteProps) => {
+  // 清空搜索栏，并重置查询
+  const resetSearch = () => {
+    // 为什么这里面的setSearchTag失效了？？
+    setPage(1);
+    setArticleListParams({});
+    clearSearch();
+  }
 
-    // deleteDataAPI(DB.Article, id).then(res => {
-    //   if (!res.success && !res.permission) {
-    //     Message.warning(visitorText);
-    //   } else if (res.success && res.permission) {
-    //     Message.success('删除成功！');
-    //     const newSearchData = searchData.filter(({ _id }: { _id: string }) => _id !== id);
-    //     const classText = searchData.filter(({ _id }: { _id: string }) => _id === id)[0]
-    //       .classes;
-    //     classCountChange(classText, 'min', () => {
-    //       dispatch(resetClasses());
-    //     });
-    //     flushSync(() => setSearchData(newSearchData));
-    //     flushSync(() => {
-    //       dispatch(reduxMap[DB.Article].dataResetReducer());
-    //       setPage(getAfterDeletedPage(searchData.length, page, defaultPageSize));
-    //     });
-    //     flushSync(() => {
-    //       dataRun();
-    //       totalRun();
-    //     });
-    //   } else {
-    //     Message.warning(failText);
-    //   }
-    // });
+  // 编辑跳转页面，带着参数过去
+  const handleEdit = ({id, title, fileName, tags, classes, postedAt}: ArticleOutputType) => {
+    navigate(`/admin/addArticle?id=${id}&fileName=${fileName}&title=${title}&tags=${tags}&classes=${classes}&postedAt=${postedAt}&from=article`);
+  };
+
+  // 删除处理
+  const handleDelete = (id: number) => {
+    mutateAsync([id]);
   };
 
   const columns = useColumns({
-    showSearchData,
     handleEdit,
-    // handleDelete,
-    handleDeleteSearch,
     deleteProps: {
       page,
       setPage
-    }
+    },
+    handleDelete
   });
 
   const render = () => (
@@ -201,7 +87,7 @@ const Article: React.FC = () => {
           placeholder='输入文章标题'
           value={searchTitle}
           onChange={value => setSearchTitle(value)}
-          onPressEnter={search}
+          onPressEnter={onSearch}
         />
         <Select
           size='large'
@@ -213,13 +99,13 @@ const Article: React.FC = () => {
           unmountOnExit={false}
           value={searchClass}
           onChange={value => setSearchClass(value)}
-          disabled={classLoading}
+          disabled={classesIsLoading}
           options={[
-            ...classes.value.map(({ class: classText }: { class: string }) => ({
-              value: classText,
-              label: classText
+            ...classesList.map((item) => ({
+              value: item.content,
+              label: item.content
             })),
-            { value: '未分类', label: '未分类' }
+            { value: '', label: '未分类' }
           ]}
         />
 
@@ -246,7 +132,7 @@ const Article: React.FC = () => {
         <Button
           type='primary'
           size='large'
-          onClick={search}
+          onClick={onSearch}
           style={{ fontSize: 16, marginRight: 10 }}
         >
           <BiSearch />
@@ -254,11 +140,7 @@ const Article: React.FC = () => {
         <Button
           type='primary'
           size='large'
-          onClick={() => {
-            flushSync(() => resetSearch());
-            flushSync(() => setPage(1));
-            setShowSearchData(false);
-          }}
+          onClick={resetSearch}
           style={{ fontSize: 16 }}
         >
           <BiBrushAlt />
@@ -275,14 +157,10 @@ const Article: React.FC = () => {
         render={render}
       />
       <MyTable
-        loading={articleLoading}
+        loading={articleIsLoading}
         columns={columns}
-        data={
-          showSearchData
-            ? searchData.slice(defaultPageSize * (page - 1), defaultPageSize * page)
-            : articleData?.items ?? []
-        }
-        total={showSearchData ? searchData.length : articleData?.meta.totalItems ?? 0}
+        data={articleData?.items ?? []}
+        total={articleData?.meta.totalItems ?? 0}
         page={page}
         setPage={setPage}
       />

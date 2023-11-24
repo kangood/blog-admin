@@ -1,24 +1,15 @@
 import { Button, Input, Message, Select } from '@arco-design/web-react';
-import { useMount, useRequest, useTitle } from 'ahooks';
+import { useTitle } from 'ahooks';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import MarkDown from '@/components/MarkDown';
-import { selectClass, selectTag } from '@/redux/selectors';
-import { resetClasses, setClasses } from '@/redux/slices/classes';
-import { setTags } from '@/redux/slices/tags';
-import { getMdFileData } from '@/services/article';
+import { ArticleInputType, getMdFileData, useCreateArticle, useUpdateArticle } from '@/services/article';
+import { useGetAllClasses } from '@/services/classes';
 import { useGetAllTag } from '@/services/tag';
-import { addDataAPI } from '@/utils/apis/addData';
-import { getDataAPI } from '@/utils/apis/getData';
-import { getDataByIdAPI } from '@/utils/apis/getDataById';
-import { getWhereDataAPI } from '@/utils/apis/getWhereData';
-import { updateDataAPI } from '@/utils/apis/updateData';
-import { failText, siteTitle, visitorText } from '@/utils/constant';
-import { DB } from '@/utils/dbConfig';
+import { siteTitle } from '@/utils/constant';
 import {
   classCountChange,
   containsChineseCharacters,
@@ -38,17 +29,17 @@ const AddArticle: React.FC = () => {
   const { leftRef, rightRef, handleScrollRun } = useScrollSync();
 
   // 接收跳转的前一页面传值（列表数据）为默认值
-  const id = searchParams.get('id');
+  const id = Number(searchParams.get('id'));
   const from = searchParams.get('from');
-  const fileName = searchParams.get('fileName');
+  const fileName = searchParams.get('fileName') || '';
   // 使用useState可修改传值
   const [titleEng, setTitleEng] = useState('');
   const [defaultClassText, setDefaultClassText] = useState('');
-  const [localTitle, setLocalTitle] = useState(searchParams.get('title') || '');
-  const [localClasses, setLocalClasses] = useState(searchParams.get('classes') || '');
-  const [localTags, setLocalTags] = useState<string[]>(searchParams.get('tags')?.split(',') || []);
-  const createdAt = searchParams.get('createdAt');
-  const dateInitialValue = createdAt ? dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss');
+  const [title, setTitle] = useState(searchParams.get('title') || '');
+  const [classes, setClasses] = useState(searchParams.get('classes') || '');
+  const [tags, setTags] = useState<string[]>(searchParams.get('tags')?.split(',') || []);
+  const postedAt = searchParams.get('postedAt');
+  const dateInitialValue = postedAt ? dayjs(postedAt).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss');
   const [localDate, setLocalDate] = useState(dateInitialValue);
 
   // 请求 API 获取md文件数据
@@ -61,85 +52,37 @@ const AddArticle: React.FC = () => {
     }
   }, [content]);
 
-  // useRequest(() => getDataByIdAPI(DB.Article, id || ''), {
-  //   retryCount: 3,
-  //   onSuccess: res => {
-  //     if (!res.data.length) return;
-  //     const { title, titleEng, classes: classText, tags, date, content } = res.data[0];
-  //     setTitle(title);
-  //     setTitleEng(titleEng);
-  //     setClassText(classText);
-  //     setLocalTags(tags);
-  //     setDate(dayjs(date).format('YYYY-MM-DD HH:mm:ss'));
-  //     setContent(content);
-  //     setDefaultClassText(classText);
-  //   }
-  // });
-
-
-  const reduxClasses = useSelector(selectClass);
+  // API hooks
+  const { mutateAsync: createMutateAsync } = useCreateArticle();
+  const { mutateAsync: updateMutateAsync } = useUpdateArticle();
   const { tagList, tagIsLoading } = useGetAllTag();
+  const { classesList, classesIsLoading } = useGetAllClasses();
 
-  const dispatch = useDispatch();
-
-  const { loading: classLoading, run: classesRun } = useRequest(
-    () => getDataAPI(DB.Class),
-    {
-      retryCount: 3,
-      manual: true,
-      onSuccess: res => {
-        dispatch(setClasses(res.data));
-      }
-    }
-  );
-
-  useMount(() => {
-    if (!reduxClasses.isDone) {
-      classesRun();
-    }
-  });
-
-  const addData = (type: 'post' | 'draft', data: object) => {
-    addDataAPI(DB.Article, data).then(res => {
-      if (!res.success && !res.permission) {
-        Message.warning(visitorText);
-      } else if (res.success && res.permission) {
-        Message.success(type === 'post' ? '发布文章成功！' : '保存草稿成功！');
-        navigate(
-          `${
-            type === 'post' ? '/admin/article' : '/admin/draft'
-          }?page=1&updated=1&clearOther=1`
-        );
-      } else {
-        Message.warning(failText);
-      }
-    });
+  const addData = (type: 'post' | 'draft', data: ArticleInputType) => {
+    createMutateAsync(data);
+    navigate(
+      `${
+        type === 'post' ? '/admin/article' : '/admin/draft'
+      }?page=1&updated=1&clearOther=1`
+    );
   };
 
-  const updateData = (type: 'post' | 'draft', id: string, data: object) => {
-    updateDataAPI(DB.Article, id, data).then(res => {
-      if (!res.success && !res.permission) {
-        Message.warning(visitorText);
-      } else if (res.success && res.permission) {
-        Message.success(type === 'post' ? '更新文章成功！' : '保存草稿成功！');
-        navigate(
-          `${
-            type === 'post' ? '/admin/article' : '/admin/draft'
-          }?page=1&updated=1&clearOther=1`
-        );
-      } else {
-        Message.warning(failText);
-      }
-    });
+  const updateData = (type: 'post' | 'draft', data: ArticleInputType) => {
+    updateMutateAsync(data);
+    navigate(
+      `${
+        type === 'post' ? '/admin/article' : '/admin/draft'
+      }?page=1&updated=1&clearOther=1`
+    );
   };
 
-  const isArticleUnique = async () => {
-    const res = await getWhereDataAPI(DB.Article, {
-      // titleEng: _.eq(titleEng)
-    });
-    const sameEngInArticles = res.data.filter(({ _id }: { _id: string }) => _id !== id);
-    return !sameEngInArticles.length;
-  };
+  // const isArticleUnique = async () => {
+  //   const res = await getWhereDataAPI(DB.Article, {
+  //     // titleEng: _.eq(titleEng)
+  //   });
+  //   const sameEngInArticles = res.data.filter(({ _id }: { _id: string }) => _id !== id);
+  //   return !sameEngInArticles.length;
+  // };
 
   // 新建页面：
   //   发布：
@@ -162,8 +105,8 @@ const AddArticle: React.FC = () => {
   //     存草稿：
 
   const postArticle = async (type: 'post' | 'draft') => {
-    if (!localTitle || !titleEng || !localDate || !localContent) {
-      Message.info('请至少输入中英文标题、时间、正文！');
+    if (!title || !localDate || !localContent) {
+      Message.info('请至少输入中文标题、时间、正文');
       return;
     }
     if (containsChineseCharacters(titleEng)) {
@@ -175,65 +118,67 @@ const AddArticle: React.FC = () => {
       return;
     }
 
-    const data = {
-      localTitle,
+    const data: ArticleInputType = {
+      id,
+      title,
       titleEng,
-      localContent,
-      localTags,
-      localClasses: localClasses,
-      date: new Date(localDate).getTime(),
-      url: `https://lzxjack.top/post?title=${titleEng}`,
+      content: localContent,
+      tags,
+      classes,
+      fileName,
+      postedAt: localDate,
+      // url: `https://lzxjack.top/post?title=${titleEng}`,
       post: type === 'post'
     };
 
-    if (!(await isArticleUnique())) {
-      Message.warning('英文标题已存在！');
-      return;
-    }
+    // if (!(await isArticleUnique())) {
+    //   Message.warning('英文标题已存在！');
+    //   return;
+    // }
 
     if (!id) {
       // 新建页面
       addData(type, data);
       if (type === 'post') {
         // 发布
-        classCountChange(localClasses, 'add', () => {
-          dispatch(resetClasses());
+        classCountChange(classes, 'add', () => {
+          // dispatch(resetClasses());
         });
       } else {
-        dispatch(resetClasses());
+        // dispatch(resetClasses());
       }
     } else {
       // 编辑页面
-      updateData(type, id, data);
+      updateData(type, data);
       if (from === 'article') {
         // 文章页进来
         if (type === 'post') {
           // 发布
-          if (localClasses !== defaultClassText) {
-            classCountChange(localClasses, 'add', () => {
-              dispatch(resetClasses());
+          if (classes !== defaultClassText) {
+            classCountChange(classes, 'add', () => {
+              // dispatch(resetClasses());
             });
             classCountChange(defaultClassText, 'min', () => {
-              dispatch(resetClasses());
+              // dispatch(resetClasses());
             });
           } else {
-            dispatch(resetClasses());
+            // dispatch(resetClasses());
           }
         } else {
           // 存草稿
           classCountChange(defaultClassText, 'min', () => {
-            dispatch(resetClasses());
+            // dispatch(resetClasses());
           });
         }
       } else {
         // 草稿页进来
         if (type === 'post') {
           // 发布
-          classCountChange(localClasses, 'add', () => {
-            dispatch(resetClasses());
+          classCountChange(classes, 'add', () => {
+            // dispatch(resetClasses());
           });
         } else {
-          dispatch(resetClasses());
+          // dispatch(resetClasses());
         }
       }
     }
@@ -249,8 +194,8 @@ const AddArticle: React.FC = () => {
             addBefore='中文标题'
             allowClear
             size='large'
-            value={localTitle}
-            onChange={value => setLocalTitle(value)}
+            value={title}
+            onChange={value => setTitle(value)}
           />
           <Input
             style={{ width: 400, marginRight: 10 }}
@@ -286,13 +231,12 @@ const AddArticle: React.FC = () => {
             showSearch
             allowClear
             unmountOnExit={false}
-            value={localClasses}
-            onChange={value => setLocalClasses(value)}
-            disabled={classLoading}
-            options={reduxClasses.value.map(
-              ({ class: localClasses }: { class: string }) => ({
-                value: localClasses,
-                label: localClasses
+            value={classes}
+            onChange={value => setClasses(value)}
+            disabled={classesIsLoading}
+            options={classesList.map((item) => ({
+                value: item.content,
+                label: item.content
               })
             )}
           />
@@ -306,8 +250,8 @@ const AddArticle: React.FC = () => {
             showSearch
             allowClear
             unmountOnExit={false}
-            value={localTags}
-            onChange={value => setLocalTags(value)}
+            value={tags}
+            onChange={value => setTags(value)}
             disabled={tagIsLoading}
             options={tagList.map(item => ({
               value: item.content,

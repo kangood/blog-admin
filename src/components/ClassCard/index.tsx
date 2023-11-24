@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useCountNotClassesArticle } from '@/services/article';
 import { ArticleClassesCountType, useCountListArticleClasses, useCreateClasses, useDeleteClasses, useUpdateClasses } from '@/services/classes';
 import { DB } from '@/utils/dbConfig';
 
@@ -25,8 +26,9 @@ const ClassCard: React.FC = () => {
   const [classText, setClassText] = useState('');
   const [newClassText, setNewClassText, resetNewClassText] = useResetState('');
 
-  // API hooks
-  const { data: articleClassesCountList, isLoading } = useCountListArticleClasses();
+  // 后端 API hooks
+  const { data: articleClassesCountList, isLoading: isLoadingA } = useCountListArticleClasses();
+  const { data: countNotClassesArticle, isLoading: isLoadingB } = useCountNotClassesArticle();
   const { mutateAsync: deleteMutateAsync } = useDeleteClasses();
   const { mutateAsync: createMutateAsync } = useCreateClasses();
   const { mutateAsync: updateMutateAsync } = useUpdateClasses();
@@ -111,12 +113,16 @@ const ClassCard: React.FC = () => {
           onChange={(value: string) => setNewClassText(value)}
           onSearch={addNewClass}
         />
-        <div className={classNames(s.classesBox, { [s.classLoading]: isLoading })}>
+        <div className={classNames(s.classesBox, { [s.classLoading]: isLoadingA })}>
           {/* 分类列表 */}
-          {isLoading ? (
+          {isLoadingA && isLoadingB  ? (
             <IconLoading />
           ) : (
-            articleClassesCountList!.map((item) => (
+            [...articleClassesCountList!, {
+              classesId: noClassId,
+              classesName: '未分类',
+              count: countNotClassesArticle
+            }].map((item) => (
                 <div key={item.classesId} className={s.classItem}>
                   <div className={s.count}>{item.count}</div>
                   <div className={s.classTextBox}>

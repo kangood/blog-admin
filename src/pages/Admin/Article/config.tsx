@@ -7,19 +7,15 @@ import { ArticleOutputType } from '@/services/article';
 import { DeleteProps } from '@/utils/hooks/useTableData';
 
 interface Props {
-  showSearchData: boolean;
   handleEdit: (record: ArticleOutputType) => void;
-  handleDelete?: (id: number, props: DeleteProps) => void;
-  handleDeleteSearch: (id: number, props: DeleteProps) => void;
+  handleDelete: (id: number) => void;
   deleteProps: DeleteProps;
 }
 
 export const useColumns = ({
   handleEdit,
   handleDelete,
-  deleteProps,
-  showSearchData,
-  handleDeleteSearch
+  deleteProps
 }: Props) => [
   {
     title: '标题',
@@ -28,7 +24,7 @@ export const useColumns = ({
   },
   {
     title: '发布时间',
-    dataIndex: 'createdAt',
+    dataIndex: 'postedAt',
     render: (timeLine: string) => <>{dayjs(timeLine).format('YYYY-MM-DD HH:mm:ss')}</>
   },
   {
@@ -64,11 +60,7 @@ export const useColumns = ({
         <Popconfirm
           position='br'
           title='确定要删除该文章吗？'
-          onOk={() => {
-            // showSearchData ? 
-              handleDeleteSearch(record.id, deleteProps)
-              // : handleDelete(_id, deleteProps);
-          }}
+          onOk={() => handleDelete(record.id)}
           okText='Yes'
           cancelText='No'
         >

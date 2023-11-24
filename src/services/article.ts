@@ -9,8 +9,13 @@ export interface ArticleInputType {
     id?: number;
     fileName?: string;
     title?: string;
-    tags?: string;
+    titleEng?: string;
+    content?: string;
+    // get请求时是string，'yyds,awsl'; post请求是数组['yyds','awsl']
+    tags?: string | string[];
     classes?: string;
+    post?: boolean;
+    postedAt?: string;
     page?: number;
     limit?: number;
     trash?: boolean;
@@ -25,6 +30,7 @@ export interface ArticleOutputType {
     fileName: string;
     tags: string[];
     post?: boolean;
+    postedAt?: Date;
     state?: boolean;
     deletedAt?: Date;
     createdAt?: Date;
@@ -43,6 +49,16 @@ export const useListArticle = (values?: ArticleInputType) => {
     return useQuery<QueryResultType<ArticleOutputType>>({
         queryKey: ['listArticle', values], 
         queryFn: () => service.get('/article', { params: values }).then((res) => res.data)
+    })
+};
+
+/**
+ * 查询未分类的文章数量
+ */
+export const useCountNotClassesArticle = () => {
+    return useQuery<number>({
+        queryKey: ['countNotClassesArticle'], 
+        queryFn: () => service.get('/article/countNotClassesArticle').then((res) => res.data)
     })
 };
 
