@@ -1,187 +1,107 @@
 import { Button, Input, Message, Popconfirm } from '@arco-design/web-react';
 import { IconDelete, IconEdit, IconLoading } from '@arco-design/web-react/icon';
-import { useRequest, useResetState } from 'ahooks';
+import { useResetState } from 'ahooks';
 import classNames from 'classnames';
 import React, { useState } from 'react';
-import { flushSync } from 'react-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { selectArticle, selectClass } from '@/redux/selectors';
-import { resetArticleData } from '@/redux/slices/articles';
-import { setClasses } from '@/redux/slices/classes';
-import { resetDraftData } from '@/redux/slices/drafts';
-import { addDataAPI } from '@/utils/apis/addData';
-import { deleteDataAPI } from '@/utils/apis/deleteData';
-import { getDataAPI } from '@/utils/apis/getData';
-import { updateDataAPI } from '@/utils/apis/updateData';
-import { updateWhereDataAPI } from '@/utils/apis/updateWhereData';
-import { _, isAdmin } from '@/utils/cloudBase';
-import { failText, visitorText } from '@/utils/constant';
+import { ArticleClassesCountType, useCountListArticleClasses, useCreateClasses, useDeleteClasses, useUpdateClasses } from '@/services/classes';
 import { DB } from '@/utils/dbConfig';
 
 import CustomModal from '../CustomModal';
 import s from './index.scss';
 
 const { Search } = Input;
-const noClassId = '000xxx000';
+const noClassId = 0;
 
 const ClassCard: React.FC = () => {
+  // React Router 导航钩子
   const navigate = useNavigate();
+
+  // 本地状态管理
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [id, setId] = useState('');
+  const [id, setId] = useState<number>();
   const [oldClassText, setOldClassText] = useState('');
   const [classText, setClassText] = useState('');
   const [newClassText, setNewClassText, resetNewClassText] = useResetState('');
 
-  const classes = useSelector(selectClass);
-  const articles = useSelector(selectArticle);
-  const dispatch = useDispatch();
+  // API hooks
+  const { data: articleClassesCountList, isLoading } = useCountListArticleClasses();
+  const { mutateAsync: deleteMutateAsync } = useDeleteClasses();
+  const { mutateAsync: createMutateAsync } = useCreateClasses();
+  const { mutateAsync: updateMutateAsync } = useUpdateClasses();
 
-  const { loading, run } = useRequest(() => getDataAPI(DB.Class), {
-    retryCount: 3,
-    manual: true,
-    onSuccess: res => {
-      dispatch(setClasses(res.data));
-    }
-  });
-
+  // 判断分类是否存在
   const isExist = (
-    content: string,
-    data: { class?: string; tag?: string }[],
-    type: 'class' | 'tag'
+    classes: string,
+    articleClassesCountList: ArticleClassesCountType[]
   ) => {
-    return data.some(item => item[type as keyof typeof item] === content);
+    return articleClassesCountList.some(item => item.classesName === classes);
   };
 
-  const openModal = (id: string) => {
+  // 打开编辑分类的弹窗
+  const openModal = (id: number) => {
     setIsModalOpen(true);
     setId(id);
-    for (const { _id, class: classText } of classes.value) {
-      if (id === _id) {
-        setClassText(classText);
-        setOldClassText(classText);
+    for (const articleClassesCount of articleClassesCountList!) {
+      if (id === articleClassesCount.classesId) {
+        setClassText(articleClassesCount.classesName);
+        setOldClassText(articleClassesCount.classesName);
         break;
       }
     }
   };
 
+  // 关闭编辑分类的弹窗
   const modalCancel = () => {
     setIsModalOpen(false);
   };
 
+  // 修改分类的确认操作
   const modalOk = () => {
     if (!classText) {
       Message.warning('请输入分类名称~');
       return;
     }
-    if (isExist(classText, classes.value, 'class')) {
+    if (isExist(classText, articleClassesCountList!)) {
       Message.warning('分类名称已存在~');
       return;
     }
-    if (!isAdmin()) {
-      Message.warning(visitorText);
-      return;
-    }
-    updateDataAPI(DB.Class, id, { class: classText }).then(res => {
-      if (!res.success && !res.permission) {
-        Message.warning(visitorText);
-      } else if (res.success && res.permission) {
-        Message.success('修改成功！');
-        modalCancel();
-        flushSync(() => run());
-        updateClassFromDB(oldClassText, classText);
-      } else {
-        Message.warning(failText);
-      }
-    });
+    // 执行更新并关闭窗口
+    updateMutateAsync({ id, content: classText });
+    modalCancel();
   };
 
+  // 添加新分类的操作
   const addNewClass = () => {
     if (!newClassText) {
       Message.warning('请输入分类名称~');
       return;
     }
-    if (isExist(newClassText, classes.value, 'class')) {
+    if (isExist(newClassText, articleClassesCountList!)) {
       Message.warning('分类名称已存在~');
       return;
     }
-    if (!isAdmin()) {
-      Message.warning(visitorText);
-      return;
-    }
-    addDataAPI(DB.Class, { class: newClassText, count: 0, date: Date.now() }).then(
-      res => {
-        if (!res.success && !res.permission) {
-          Message.warning(visitorText);
-        } else if (res.success && res.permission) {
-          Message.success('添加成功！');
-          resetNewClassText();
-          flushSync(() => run());
-        } else {
-          Message.warning(failText);
-        }
-      }
-    );
+    // 执行新建并重置输入框
+    createMutateAsync({ content: newClassText });
+    resetNewClassText();
   };
 
-  const updateClassFromDB = (oldClassText: string, newClassText: string) => {
-    updateWhereDataAPI(
-      DB.Article,
-      { classes: _.eq(oldClassText) },
-      { classes: newClassText }
-    ).then(res => {
-      if (!res.success && !res.permission) {
-        Message.warning(visitorText);
-      } else if (res.success && res.permission) {
-        Message.success(`更新数据库分类成功！`);
-        dispatch(resetArticleData());
-        dispatch(resetDraftData());
-      } else {
-        Message.warning(failText);
-      }
-    });
-  };
+  // 删除分类的操作
+  const deleteClasses = (id: number) => {
+    deleteMutateAsync([id]);
+  }
 
-  const deleteClass = (id: string, classText: string) => {
-    if (!isAdmin()) {
-      Message.warning(visitorText);
-      return;
-    }
-    deleteDataAPI(DB.Class, id).then(res => {
-      if (!res.success && !res.permission) {
-        Message.warning(visitorText);
-      } else if (res.success && res.permission) {
-        Message.success('删除成功！');
-        flushSync(() => run());
-        updateClassFromDB(classText, '');
-      } else {
-        Message.warning(failText);
-      }
-    });
-  };
-
+  // 点击分类跳转到相关文章页面
   const toArticle = (classText: string) => {
     navigate(`/admin/article?searchClass=${encodeURIComponent(classText)}`);
-  };
-
-  const getNoClass = () => {
-    let sum = 0;
-    classes.value.forEach((item: any) => {
-      sum += item.count;
-    });
-
-    return {
-      _id: noClassId,
-      class: '未分类',
-      count: `${articles.count.value - sum}`
-    };
   };
 
   return (
     <>
       <div className={s.cardBox}>
         <div className={s.title}>分类</div>
+        {/* 新建分类的搜索框 */}
         <Search
           size='default'
           allowClear
@@ -191,41 +111,33 @@ const ClassCard: React.FC = () => {
           onChange={(value: string) => setNewClassText(value)}
           onSearch={addNewClass}
         />
-        <div className={classNames(s.classesBox, { [s.classLoading]: loading })}>
-          {loading ? (
+        <div className={classNames(s.classesBox, { [s.classLoading]: isLoading })}>
+          {/* 分类列表 */}
+          {isLoading ? (
             <IconLoading />
           ) : (
-            [...classes.value, getNoClass()].map(
-              ({
-                _id,
-                class: classText,
-                count
-              }: {
-                _id: string;
-                class: string;
-                count: number;
-              }) => (
-                <div key={_id} className={s.classItem}>
-                  <div className={s.count}>{count}</div>
+            articleClassesCountList!.map((item) => (
+                <div key={item.classesId} className={s.classItem}>
+                  <div className={s.count}>{item.count}</div>
                   <div className={s.classTextBox}>
-                    <div className={s.classText} onClick={() => toArticle(classText)}>
-                      《{classText}》
+                    <div className={s.classText} onClick={() => toArticle(item.classesName)}>
+                      {item.classesName}
                     </div>
                   </div>
                   <Button
                     type='primary'
                     className={s.classBtn}
                     icon={<IconEdit />}
-                    onClick={() => openModal(_id)}
-                    disabled={_id === noClassId}
+                    onClick={() => openModal(item.classesId)}
+                    disabled={item.classesId === noClassId}
                   />
                   <Popconfirm
                     position='br'
-                    title={`确定要删除《${classText}》吗？`}
-                    onOk={() => deleteClass(_id, classText)}
+                    title={`确定要删除《${item.classesName}》吗？`}
+                    onOk={() => deleteClasses(item.classesId)}
                     okText='Yes'
                     cancelText='No'
-                    disabled={_id === noClassId}
+                    disabled={item.classesId === noClassId}
                   >
                     <Button
                       style={{ width: 30, height: 30 }}
@@ -233,7 +145,7 @@ const ClassCard: React.FC = () => {
                       status='danger'
                       className={s.classBtn}
                       icon={<IconDelete />}
-                      disabled={_id === noClassId}
+                      disabled={item.classesId === noClassId}
                     />
                   </Popconfirm>
                 </div>
