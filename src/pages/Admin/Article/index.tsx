@@ -3,6 +3,7 @@ import './index.custom.scss';
 import { Button, Input, Select } from '@arco-design/web-react';
 import { useTitle } from 'ahooks';
 import React, { useState } from 'react';
+import { flushSync } from 'react-dom';
 import { BiBrushAlt, BiSearch } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +12,7 @@ import PageHeader from '@/components/PageHeader';
 import { ArticleInputType, ArticleOutputType, useDeleteArticle, useListArticle } from '@/services/article';
 import { useGetAllClasses } from '@/services/classes';
 import { useGetAllTag } from '@/services/tag';
-import { siteTitle } from '@/utils/constant';
+import { defaultPageSize, siteTitle } from '@/utils/constant';
 import { useMyParams } from '@/utils/hooks/useMyParams';
 import { usePage } from '@/utils/hooks/usePage';
 
@@ -23,21 +24,26 @@ const Article: React.FC = () => {
   useTitle(`${siteTitle} | ${Title.Articles}`);
   const navigate = useNavigate();
 
+  // 当前页状态
   const { page, setPage } = usePage();
 
   // 搜索栏参数状态封装
   const {
-    searchTitle,
-    searchClass,
-    searchTag,
-    setSearchTitle,
-    setSearchClass,
-    setSearchTag,
-    clearSearch
+    searchTitle, searchClass, searchTag,
+    setSearchTitle, setSearchClass, setSearchTag, clearSearch
   } = useMyParams();
 
+  // 分页列表请求参数
+  const searchParams = {
+    tags: searchTag.join(','),
+    title: searchTitle,
+    classes: searchClass,
+    page,
+    limit: defaultPageSize
+  };
+
   // 后端 api 请求 hooks
-  const [articleListParams, setArticleListParams] = useState<ArticleInputType>();
+  const [articleListParams, setArticleListParams] = useState<ArticleInputType>(searchParams);
   const { data: articleData, isLoading: articleIsLoading } = useListArticle(articleListParams);
   const { tagList, tagIsLoading } = useGetAllTag();
   const { classesList, classesIsLoading } = useGetAllClasses();
@@ -45,14 +51,15 @@ const Article: React.FC = () => {
 
   // 条件查询，修改搜索数据之后重新调用 API
   const onSearch = () => {
+    // 这里的setPage到searchParams中的page有延迟，需要额外修改searchParams.page
+    searchParams.page = 1;
     setPage(1);
-    setArticleListParams({tags: searchTag.join(','), title: searchTitle, classes: searchClass});
+    setArticleListParams(searchParams);
   };
 
   // 清空搜索栏，并重置查询
   const resetSearch = () => {
-    // 为什么这里面的setSearchTag失效了？？
-    setPage(1);
+    flushSync(() => setPage(1));
     setArticleListParams({});
     clearSearch();
   }
@@ -67,15 +74,20 @@ const Article: React.FC = () => {
     mutateAsync([id]);
   };
 
+  // 页数改变处理
+  const onPageChange = (page: number) => {
+    searchParams.page = page;
+    setPage(page);
+    setArticleListParams(searchParams);
+  }
+
+  // 列的定义和数据，以及操作栏函数
   const columns = useColumns({
     handleEdit,
-    deleteProps: {
-      page,
-      setPage
-    },
     handleDelete
   });
 
+  // 页头搜索栏渲染
   const render = () => (
     <div className={s.searchBox}>
       <div className={s.search}>
@@ -108,7 +120,6 @@ const Article: React.FC = () => {
             { value: '', label: '未分类' }
           ]}
         />
-
         <Select
           placeholder='请选择文章标签'
           size='large'
@@ -162,7 +173,7 @@ const Article: React.FC = () => {
         data={articleData?.items ?? []}
         total={articleData?.meta.totalItems ?? 0}
         page={page}
-        setPage={setPage}
+        onChange={onPageChange}
       />
     </>
   );

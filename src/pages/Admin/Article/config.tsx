@@ -4,18 +4,15 @@ import React from 'react';
 
 import TableTag from '@/components/TableTag';
 import { ArticleOutputType } from '@/services/article';
-import { DeleteProps } from '@/utils/hooks/useTableData';
 
 interface Props {
   handleEdit: (record: ArticleOutputType) => void;
   handleDelete: (id: number) => void;
-  deleteProps: DeleteProps;
 }
 
 export const useColumns = ({
   handleEdit,
-  handleDelete,
-  deleteProps
+  handleDelete
 }: Props) => [
   {
     title: '标题',

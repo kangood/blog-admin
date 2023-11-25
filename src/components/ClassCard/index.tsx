@@ -96,6 +96,9 @@ const ClassCard: React.FC = () => {
 
   // 点击分类跳转到相关文章页面
   const toArticle = (classText: string) => {
+    if (classText === '未分类') {
+      classText = '';
+    }
     navigate(`/admin/article?searchClass=${encodeURIComponent(classText)}`);
   };
 

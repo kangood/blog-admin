@@ -14,7 +14,9 @@ interface Props {
   page: number;
   pageSize?: number;
   noHeader?: boolean;
-  setPage: (page: number) => void;
+  // setPage 和 onChange 二选一，setPage是之前的只设置页面，onChange则可以做更多操作
+  setPage?: (page: number) => void;
+  onChange?: (page: number) => void;
 }
 
 const MyTable: React.FC<Props> = ({
@@ -25,7 +27,8 @@ const MyTable: React.FC<Props> = ({
   page,
   pageSize = defaultPageSize,
   noHeader = false,
-  setPage
+  setPage,
+  onChange
 }) => (
   <>
     <div className={classNames(s.myTableBox, { [s.noHeader]: noHeader })}>
@@ -49,7 +52,7 @@ const MyTable: React.FC<Props> = ({
         total={total}
         pageSize={pageSize}
         sizeCanChange={false}
-        onChange={(page: number) => setPage(page)}
+        onChange={setPage ? (page) => setPage(page) : (page) => onChange!(page)}
         hideOnSinglePage={true}
         showTotal={true}
       />
