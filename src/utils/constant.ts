@@ -35,9 +35,6 @@ export const visitorText = '游客不可以修改哦~😆';
 // 操作失败后的提示语句
 export const failText = '操作失败，请重试！';
 
-// notice数据id
-export const noticeId = '2d44d6c2612a2178078ff9f553561764';
-
 // 分页：默认每页数量
 export const defaultPageSize = 9;
 // 作品 分页

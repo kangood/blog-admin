@@ -173,6 +173,7 @@ const Article: React.FC = () => {
         data={articleData?.items ?? []}
         total={articleData?.meta.totalItems ?? 0}
         page={page}
+        pageSize={defaultPageSize}
         onChange={onPageChange}
       />
     </>
