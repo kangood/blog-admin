@@ -22,8 +22,8 @@
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "yarn eslint",
-      "commit-msg": "yarn commitlint"
+      "pre-commit": "pnpm eslint",
+      "commit-msg": "pnpm commitlint"
     }
   },
   "dependencies": {
@@ -44,7 +44,7 @@
     "@types/lodash": "^4.14.201",
     "@types/marked": "^4.0.8",
     "@types/react": "^17.0.40",
-    "@types/react-dom": "^17.0.13",
+    "@types/react-dom": "^18.2.17",
     "@types/react-sticky": "^6.0.4",
     "@types/webpack-env": "1.16.3",
     "@typescript-eslint/eslint-plugin": "5.13.0",
@@ -90,7 +90,7 @@
     "typescript": "^4.9.5",
     "webpack": "5.69.1",
     "webpack-bundle-analyzer": "4.5.0",
-    "webpack-cli": "4.9.2",
+    "webpack-cli": "4.10.0",
     "webpack-dev-server": "4.7.4",
     "webpack-merge": "5.8.0",
     "webpackbar": "5.0.2"
