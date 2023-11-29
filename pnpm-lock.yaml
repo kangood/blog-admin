@@ -57,7 +57,7 @@ dependencies:
     specifier: ^17.0.40
     version: 17.0.71
   '@types/react-dom':
-    specifier: ^18.2.0
+    specifier: ^18.2.17
     version: 18.2.17
   '@types/react-sticky':
     specifier: ^6.0.4
