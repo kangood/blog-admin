@@ -1,7 +1,7 @@
 import { Button } from '@arco-design/web-react';
 import React, { MouseEventHandler } from 'react';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface Props {
   text: string;

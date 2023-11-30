@@ -5,7 +5,7 @@ import { IoImage } from 'react-icons/io5';
 
 import { DeleteProps } from '@/utils/hooks/useTableData';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface Props {
   handleEdit: (id: string) => void;

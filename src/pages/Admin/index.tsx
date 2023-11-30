@@ -8,7 +8,7 @@ import WithLoading from '@/components/WithLoading';
 import { oldVersionUrl } from '@/utils/constant';
 
 import { RouteType, useRoutes } from './config';
-import s from './index.scss';
+import s from './index.module.scss';
 
 const Admin: React.FC = () => {
   const routes = useRoutes();

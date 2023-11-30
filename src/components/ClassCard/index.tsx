@@ -10,7 +10,7 @@ import { ArticleClassesCountType, useCountListArticleClasses, useCreateClasses, 
 import { DB } from '@/utils/dbConfig';
 
 import CustomModal from '../CustomModal';
-import s from './index.scss';
+import s from './index.module.scss';
 
 const { Search } = Input;
 const noClassId = 0;

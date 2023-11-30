@@ -7,7 +7,7 @@ import { isAdmin } from '@/utils/cloudBase';
 import { blogUrl, nowEnv, userAvatar, visitorAvatar } from '@/utils/constant';
 import { useTime } from '@/utils/hooks/useTime';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();

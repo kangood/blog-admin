@@ -5,7 +5,7 @@ import hljs from 'highlight.js';
 import { marked } from 'marked';
 import React, { forwardRef } from 'react';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface Props {
   content: string;

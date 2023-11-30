@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import MarkDown from '../MarkDown';
 import PageHeader from '../PageHeader';
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface Props {
   style?: object;

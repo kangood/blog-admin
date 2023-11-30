@@ -3,7 +3,7 @@ import React from 'react';
 import { dataMap } from '@/utils/dataMap';
 import { DB } from '@/utils/dbConfig';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface Props {
   isEdit: boolean;

@@ -15,7 +15,7 @@ import { DB } from '@/utils/dbConfig';
 import { useScrollSync } from '@/utils/hooks/useScrollSync';
 
 import { Title } from '../titleConfig';
-import s from './index.scss';
+import s from './index.module.scss';
 
 const AboutEdit: React.FC = () => {
   const [searchParams] = useSearchParams();

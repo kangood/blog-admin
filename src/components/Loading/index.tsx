@@ -1,7 +1,7 @@
 import { IconLoading } from '@arco-design/web-react/icon';
 import React from 'react';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 const Loading: React.FC = () => {
   return (

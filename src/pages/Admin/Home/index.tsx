@@ -22,7 +22,7 @@ import { _ } from '@/utils/cloudBase';
 import { siteTitle } from '@/utils/constant';
 import { DB } from '@/utils/dbConfig';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 const Home: React.FC = () => {
   useTitle(siteTitle);
@@ -78,7 +78,7 @@ const Home: React.FC = () => {
           <ClassCard />
         </div>
         <div className={s.tagsNoticeContainer}>
-          <div className={s.NoticeContainer}>
+          <div className={s.noticeContainer} >
             <NoticeCard />
           </div>
           <div className={s.tagsContainer}>

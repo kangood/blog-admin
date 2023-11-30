@@ -6,7 +6,7 @@ import React from 'react';
 import { blogUrl } from '@/utils/constant';
 import { DeleteProps } from '@/utils/hooks/useTableData';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface Props {
   handleDelete: (id: string, props: DeleteProps) => void;

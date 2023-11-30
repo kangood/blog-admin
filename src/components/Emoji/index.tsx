@@ -4,7 +4,7 @@ import React from 'react';
 
 import EmojiItem from './EmojiItem';
 import { emojiFood, emojiNature, emojiPeople, emojiSymbol } from './emojis';
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface EmojiType {
   emojis: string[];

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { MouseEventHandler } from 'react';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface Props {
   viewUrl: string;

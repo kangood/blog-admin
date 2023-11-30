@@ -9,7 +9,7 @@ import { DB } from '@/utils/dbConfig';
 
 import CustomModal from '../CustomModal';
 import Emoji from '../Emoji';
-import s from './index.scss';
+import s from './index.module.scss';
 
 const { TextArea } = Input;
 

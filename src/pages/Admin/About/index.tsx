@@ -11,7 +11,7 @@ import { DB } from '@/utils/dbConfig';
 import { useUpdateData } from '@/utils/hooks/useUpdateData';
 
 import { Title } from '../titleConfig';
-import s from './index.scss';
+import s from './index.module.scss';
 
 const About: React.FC = () => {
   useTitle(`${siteTitle} | ${Title.About}`);

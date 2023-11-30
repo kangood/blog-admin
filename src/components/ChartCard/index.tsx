@@ -10,7 +10,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useChartData } from './config';
-import s from './index.scss';
+import s from './index.module.scss';
 
 echarts.use([
   TitleComponent,

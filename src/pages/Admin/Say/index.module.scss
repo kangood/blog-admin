@@ -11,7 +11,7 @@ $height: 90px;
     display: inline-block;
     position: relative;
     height: $height;
-    width: $height * 4/3;
+    width: calc($height * 4 / 3);
     margin-right: 5px;
     border-radius: 2px;
     overflow: hidden;

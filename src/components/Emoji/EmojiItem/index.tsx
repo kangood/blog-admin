@@ -2,7 +2,7 @@ import { Message } from '@arco-design/web-react';
 import copy from 'copy-to-clipboard';
 import React from 'react';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface Props {
   emojis: string[];

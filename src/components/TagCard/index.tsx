@@ -13,7 +13,7 @@ import { DB } from '@/utils/dbConfig';
 // 导入自定义组件
 import CustomModal from '../CustomModal';
 import { useColor } from './config';
-import s from './index.scss';
+import s from './index.module.scss';
 
 const { Search } = Input;
 

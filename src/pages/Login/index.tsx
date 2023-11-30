@@ -8,7 +8,7 @@ import { authLoginAPI } from '@/utils/apis/authLogin';
 import { auth } from '@/utils/cloudBase';
 import { avatarUrl, nowEnv, siteTitle, visitorEmail, visitorPwd } from '@/utils/constant';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 const Login: React.FC = () => {
   useTitle(siteTitle);

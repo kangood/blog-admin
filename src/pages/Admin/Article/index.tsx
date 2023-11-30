@@ -18,7 +18,7 @@ import { usePage } from '@/utils/hooks/usePage';
 
 import { Title } from '../titleConfig';
 import { useColumns } from './config';
-import s from './index.scss';
+import s from './index.module.scss';
 
 const Article: React.FC = () => {
   useTitle(`${siteTitle} | ${Title.Articles}`);

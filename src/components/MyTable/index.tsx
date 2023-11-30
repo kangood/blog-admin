@@ -4,7 +4,7 @@ import React from 'react';
 
 import { defaultPageSize } from '@/utils/constant';
 
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface Props {
   loading: boolean;

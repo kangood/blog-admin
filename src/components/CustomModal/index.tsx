@@ -5,7 +5,7 @@ import { DB } from '@/utils/dbConfig';
 import { DataFilterProps } from '@/utils/hooks/useTableData';
 
 import ModalTitle from '../ModalTitle';
-import s from './index.scss';
+import s from './index.module.scss';
 
 interface Props {
   isEdit: boolean;
