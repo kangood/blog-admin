@@ -8,10 +8,10 @@ import RequireAuth from '@/components/RequireAuth';
 import WithLoading from './components/WithLoading';
 
 const Login = lazy(
-  () => import(/* webpackChunkName:'Login', webpackPrefetch:true */ '@/pages/Login')
+  () => import('@/pages/Login')
 );
 const Admin = lazy(
-  () => import(/* webpackChunkName:'Admin', webpackPrefetch:true */ '@/pages/Admin')
+  () => import('@/pages/Admin')
 );
 
 const App: React.FC = () => {

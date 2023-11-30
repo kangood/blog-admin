@@ -12,44 +12,40 @@ import {
 } from 'react-icons/bi';
 
 const Home = lazy(
-  () => import(/* webpackChunkName:'Home', webpackPrefetch:true */ '@/pages/Admin/Home')
+  () => import('@/pages/Admin/Home')
 );
 const Article = lazy(
   () =>
-    import(/* webpackChunkName:'Article', webpackPrefetch:true */ '@/pages/Admin/Article')
+    import('@/pages/Admin/Article')
 );
 const Say = lazy(
-  () => import(/* webpackChunkName:'Say', webpackPrefetch:true */ '@/pages/Admin/Say')
+  () => import('@/pages/Admin/Say')
 );
 const Msg = lazy(
-  () => import(/* webpackChunkName:'Msg', webpackPrefetch:true */ '@/pages/Admin/Msg')
+  () => import('@/pages/Admin/Msg')
 );
 const Link = lazy(
-  () => import(/* webpackChunkName:'Link', webpackPrefetch:true */ '@/pages/Admin/Link')
+  () => import('@/pages/Admin/Link')
 );
 const Show = lazy(
-  () => import(/* webpackChunkName:'Show', webpackPrefetch:true */ '@/pages/Admin/Show')
+  () => import('@/pages/Admin/Show')
 );
 const About = lazy(
-  () => import(/* webpackChunkName:'About', webpackPrefetch:true */ '@/pages/Admin/About')
+  () => import('@/pages/Admin/About')
 );
 const Log = lazy(
-  () => import(/* webpackChunkName:'Log', webpackPrefetch:true */ '@/pages/Admin/Log')
+  () => import('@/pages/Admin/Log')
 );
 const Draft = lazy(
-  () => import(/* webpackChunkName:'Draft', webpackPrefetch:true */ '@/pages/Admin/Draft')
+  () => import('@/pages/Admin/Draft')
 );
 const AddArticle = lazy(
   () =>
-    import(
-      /* webpackChunkName:'AddArticle', webpackPrefetch:true */ '@/pages/Admin/AddArticle'
-    )
+    import('@/pages/Admin/AddArticle')
 );
 const AboutEdit = lazy(
   () =>
-    import(
-      /* webpackChunkName:'AboutEdit', webpackPrefetch:true */ '@/pages/Admin/AboutEdit'
-    )
+    import('@/pages/Admin/AboutEdit')
 );
 
 export interface RouteType {

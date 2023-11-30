@@ -10,10 +10,6 @@ import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import { queryClient } from './http/tanstack/react-query';
 
-if (module?.hot) {
-  module.hot.accept();
-}
-
 const containerElement = document.getElementById('root') as HTMLElement;
 
 const root = createRoot(containerElement);
