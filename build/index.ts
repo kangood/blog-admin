@@ -29,6 +29,10 @@ export const createConfig = (params: ConfigEnv, configure?: Configure): UserConf
                         changeOrigin: true
                     }
                 }
+            },
+            // 生产端口
+            preview: {
+                port: 6602
             }
         },
         typeof configure === 'function' ? configure(params, isBuild) : {},
