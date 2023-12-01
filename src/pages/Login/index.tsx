@@ -39,13 +39,13 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className={s.LoginBox}>
+    <div className={s.loginBox}>
       <div className={s.leftBox}>个人博客后台管理系统</div>
       <div className={s.rightBox}>
         <div className={s.avatarBox}>
           <img src={avatarUrl} alt='avatar' />
         </div>
-        <div className={s.loginBox}>
+        <div className={s.signInBox}>
           <Input
             style={{ marginBottom: 20 }}
             size='large'
