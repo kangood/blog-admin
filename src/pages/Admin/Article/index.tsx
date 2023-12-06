@@ -65,8 +65,8 @@ const Article: React.FC = () => {
   }
 
   // 编辑跳转页面，带着参数过去
-  const handleEdit = ({id, title, fileName, tags, classes, postedAt}: ArticleOutputType) => {
-    navigate(`/admin/addArticle?id=${id}&fileName=${fileName}&title=${title}&tags=${tags}&classes=${classes}&postedAt=${postedAt}&from=article`);
+  const handleEdit = (record: ArticleOutputType) => {
+    navigate('/admin/addArticle?from=article', { state: record });
   };
 
   // 删除处理

@@ -3,10 +3,10 @@ import { useTitle } from 'ahooks';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import MarkDown from '@/components/MarkDown';
-import { ArticleInputType, getMdFileData, useCreateArticle, useUpdateArticle } from '@/services/article';
+import { ArticleInputType, ArticleOutputType, getMdFileData, useCreateArticle, useUpdateArticle } from '@/services/article';
 import { useGetAllClasses } from '@/services/classes';
 import { useGetAllTag } from '@/services/tag';
 import { siteTitle } from '@/utils/constant';
@@ -22,28 +22,30 @@ import s from './index.module.scss';
 
 const AddArticle: React.FC = () => {
   useTitle(`${siteTitle} | ${Title.AddArticle}`);
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+
 
   // 同步左右两边屏幕滚动，让它们一直处于同等位置
   const { leftRef, rightRef, handleScrollRun } = useScrollSync();
 
   // 接收跳转的前一页面传值（列表数据）为默认值
-  const id = Number(searchParams.get('id'));
   const from = searchParams.get('from');
-  const fileName = searchParams.get('fileName') || '';
+  const articleOutput: ArticleOutputType = location.state || {};
+  const id = Number(articleOutput.id || undefined);
   // 使用useState可修改传值
-  const [titleEng, setTitleEng] = useState('');
+  const [titleEng, setTitleEng] = useState(articleOutput.titleEng || '');
   const [defaultClassText, setDefaultClassText] = useState('');
-  const [title, setTitle] = useState(searchParams.get('title') || '');
-  const [classes, setClasses] = useState(searchParams.get('classes') || '');
-  const [tags, setTags] = useState<string[]>(searchParams.get('tags')?.split(',') || []);
-  const postedAt = searchParams.get('postedAt');
+  const [title, setTitle] = useState(articleOutput.title || '');
+  const [classes, setClasses] = useState(articleOutput.classes || '');
+  const [tags, setTags] = useState<string[]>(articleOutput.tags || []);
+  const postedAt = articleOutput.postedAt;
   const dateInitialValue = postedAt ? dayjs(postedAt).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss');
   const [localDate, setLocalDate] = useState(dateInitialValue);
 
   // 请求 API 获取md文件数据
-  const { data: content } = getMdFileData(fileName!);
+  const { data: content } = getMdFileData(titleEng, !!id);
   const [localContent, setLocalContent] = useState<string>('');
   // 监听content变化，直到有值为止，防止异步请求结果返回，晚于初始页面渲染的时间
   useEffect(() => {
@@ -125,9 +127,8 @@ const AddArticle: React.FC = () => {
       content: localContent,
       tags,
       classes,
-      fileName,
       postedAt: localDate,
-      // url: `https://lzxjack.top/post?title=${titleEng}`,
+      url: `https://panlore.top/blog/${titleEng}`,
       post: type === 'post'
     };
 

@@ -11,6 +11,7 @@ export interface ArticleInputType {
     title?: string;
     titleEng?: string;
     content?: string;
+    url?: string;
     // get请求时是string，'yyds,awsl'; post请求是数组['yyds','awsl']
     tags?: string | string[];
     classes?: string;
@@ -65,11 +66,11 @@ export const useCountNotClassesArticle = () => {
 /**
  * 获取md文件数据
  */
-export const getMdFileData = (fileName: string) => {
+export const getMdFileData = (titleEng: string, enabled: boolean) => {
     return useQuery<string>({
-        queryKey: ['listArticle', fileName], 
-        queryFn: () => service.get('/article/getMdFileData', { params: { fileName } }).then((res) => res.data),
-        enabled: !!fileName
+        queryKey: ['listArticle', titleEng], 
+        queryFn: () => service.get('/article/getMdFileData', { params: { titleEng } }).then((res) => res.data),
+        enabled
     })
 };
 
