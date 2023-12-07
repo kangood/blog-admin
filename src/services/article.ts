@@ -7,7 +7,6 @@ import { QueryResultType } from '@/utils/types';
 
 export interface ArticleInputType {
     id?: number;
-    fileName?: string;
     title?: string;
     titleEng?: string;
     content?: string;
@@ -17,6 +16,7 @@ export interface ArticleInputType {
     classes?: string;
     post?: boolean;
     postedAt?: string;
+    summary?: string;
     page?: number;
     limit?: number;
     trash?: boolean;
@@ -28,10 +28,10 @@ export interface ArticleOutputType {
     titleEng?: string;
     classes?: string;
     url?: string;
-    fileName: string;
     tags: string[];
     post?: boolean;
     postedAt?: Date;
+    summary?: string;
     state?: boolean;
     deletedAt?: Date;
     createdAt?: Date;
@@ -68,7 +68,9 @@ export const useCountNotClassesArticle = () => {
  */
 export const getMdFileData = (titleEng: string, enabled: boolean) => {
     return useQuery<string>({
-        queryKey: ['listArticle', titleEng], 
+        // 不监听 titleEng 的变化，只加载一次
+        // queryKey: ['listArticle', titleEng], 
+        queryKey: ['listArticle'], 
         queryFn: () => service.get('/article/getMdFileData', { params: { titleEng } }).then((res) => res.data),
         enabled
     })

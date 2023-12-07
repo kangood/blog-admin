@@ -2,7 +2,6 @@
 @import '../../../styles/style.scss';
 
 .addArticleHeader {
-  height: 102px;
   padding: 10px;
   background-color: #fff;
   border-radius: 2px;
@@ -35,6 +34,11 @@
       flex: 2;
       margin: 0 10px;
     }
+  }
+
+  .summary {
+    display: flex;
+    margin-top: 10px;
   }
 }
 

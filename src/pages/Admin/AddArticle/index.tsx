@@ -26,7 +26,6 @@ const AddArticle: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-
   // 同步左右两边屏幕滚动，让它们一直处于同等位置
   const { leftRef, rightRef, handleScrollRun } = useScrollSync();
 
@@ -43,6 +42,7 @@ const AddArticle: React.FC = () => {
   const postedAt = articleOutput.postedAt;
   const dateInitialValue = postedAt ? dayjs(postedAt).format('YYYY-MM-DD HH:mm:ss') : dayjs().format('YYYY-MM-DD HH:mm:ss');
   const [localDate, setLocalDate] = useState(dateInitialValue);
+  const [summary, setSummary] = useState(articleOutput.summary || '');
 
   // 请求 API 获取md文件数据
   let { data: content } = getMdFileData(titleEng, !!id);
@@ -125,7 +125,7 @@ const AddArticle: React.FC = () => {
 
     // 点击新增和更新文章的时候，附加上文章的 meta data
     localContent = `---\ntitle: ${title}\ndate: ${dayjs(localDate).format('YYYY-MM-DD')}\n` 
-      + `draft: ${type === 'draft'}\ntags: ${JSON.stringify(tags)}\n---\n\n`
+      + `draft: ${type === 'draft'}\ntags: ${JSON.stringify(tags)}\nsummary: ${summary}\n---\n\n`
       + localContent;
 
     const data: ArticleInputType = {
@@ -136,6 +136,7 @@ const AddArticle: React.FC = () => {
       tags,
       classes,
       postedAt: localDate,
+      summary,
       url: `https://panlore.top/blog/${titleEng}`,
       post: type === 'post'
     };
@@ -275,6 +276,14 @@ const AddArticle: React.FC = () => {
             className={s.time}
             allowClear
             size='large'
+          />
+        </div>
+        <div className={classNames(s.summary, 'arco-input-group-wrapper')}>
+          <div className='arco-select-addbefore'>概要</div>
+          <Input.TextArea
+            allowClear
+            value={summary}
+            onChange={value => setSummary(value)}
           />
         </div>
       </div>

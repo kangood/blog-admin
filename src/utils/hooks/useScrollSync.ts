@@ -21,9 +21,11 @@ export const useScrollSync = () => {
     // 判断事件来源，执行相应的滚动同步
     if (event.target === left) {
       right.scrollTop = scrollTopRatio * (right.scrollHeight - right.clientHeight);
-    } else if (event.target === right) {
-      left.scrollTop = scrollTopRatio * (left.scrollHeight - left.clientHeight);
     }
+    // 两边互相同步有 bug，右边移动的时候就不同步了
+    // else if (event.target === right) {
+    //   left.scrollTop = scrollTopRatio * (left.scrollHeight - left.clientHeight);
+    // }
   };
 
   // 使用 ahooks 提供的 useThrottleFn 进行函数节流
