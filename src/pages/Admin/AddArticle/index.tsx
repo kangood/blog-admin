@@ -45,11 +45,14 @@ const AddArticle: React.FC = () => {
   const [localDate, setLocalDate] = useState(dateInitialValue);
 
   // 请求 API 获取md文件数据
-  const { data: content } = getMdFileData(titleEng, !!id);
-  const [localContent, setLocalContent] = useState<string>('');
+  let { data: content } = getMdFileData(titleEng, !!id);
+  let [localContent, setLocalContent] = useState<string>('');
   // 监听content变化，直到有值为止，防止异步请求结果返回，晚于初始页面渲染的时间
   useEffect(() => {
     if (content) {
+      if (typeof content === 'string') {
+        content = content.replace(/---[\s\S]*?---\n\n/, '');
+      }
       setLocalContent(typeof content === 'string' ? content : '');
     }
   }, [content]);
@@ -119,6 +122,11 @@ const AddArticle: React.FC = () => {
       Message.info('日期字符串不合法！');
       return;
     }
+
+    // 点击新增和更新文章的时候，附加上文章的 meta data
+    localContent = `---\ntitle: ${title}\ndate: ${dayjs(localDate).format('YYYY-MM-DD')}\n` 
+      + `draft: ${type === 'draft'}\ntags: ${JSON.stringify(tags)}\n---\n\n`
+      + localContent;
 
     const data: ArticleInputType = {
       id,
