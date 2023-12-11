@@ -43,10 +43,10 @@ const Admin: React.FC = () => {
                 <Route
                   key={item.path}
                   path={item.path}
-                  element={
-                    <RequireAuth requireLogin={true} to='/'>
-                      {item.element}
-                    </RequireAuth>
+                  element={item.element
+                    // <RequireAuth requireLogin={true} to='/'>
+                    //   {item.element}
+                    // </RequireAuth>
                   }
                 />
               ))}

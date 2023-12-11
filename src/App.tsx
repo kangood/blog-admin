@@ -28,10 +28,10 @@ const App: React.FC = () => {
         />
         <Route
           path='admin/*'
-          element={
-            <RequireAuth requireLogin={true} to='/'>
-              <Admin />
-            </RequireAuth>
+          element={<Admin />
+            // <RequireAuth requireLogin={true} to='/'>
+            //   <Admin />
+            // </RequireAuth>
           }
         />
         <Route path='*' element={<Navigate to='/' />} />

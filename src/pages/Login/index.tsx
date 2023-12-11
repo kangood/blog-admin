@@ -19,23 +19,26 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (Email: string, pwd: string) => {
-    if (nowEnv === 'test') {
-      const res = await auth.anonymousAuthProvider().signIn();
-      if (res.isAnonymousAuth) {
-        navigate('admin');
-        Message.success('登录成功！欢迎进入个人博客后台管理系统！');
-      }
-      return;
-    }
-    if (!Email || !pwd) {
-      Message.warning('登录失败！请输入账号、密码！');
-      return;
-    }
-    const res = await authLoginAPI(Email, pwd);
-    res && navigate('admin');
-    res
-      ? Message.success('登录成功！欢迎进入个人博客后台管理系统！')
-      : Message.warning('登录失败！用户名或密码不正确，请重新登录！');
+    navigate('admin');
+    Message.success('登录成功！欢迎进入个人博客后台管理系统！');
+    return;
+    // if (nowEnv === 'test') {
+    //   const res = await auth.anonymousAuthProvider().signIn();
+    //   if (res.isAnonymousAuth) {
+    //     navigate('admin');
+    //     Message.success('登录成功！欢迎进入个人博客后台管理系统！');
+    //   }
+    //   return;
+    // }
+    // if (!Email || !pwd) {
+    //   Message.warning('登录失败！请输入账号、密码！');
+    //   return;
+    // }
+    // const res = await authLoginAPI(Email, pwd);
+    // res && navigate('admin');
+    // res
+    //   ? Message.success('登录成功！欢迎进入个人博客后台管理系统！')
+    //   : Message.warning('登录失败！用户名或密码不正确，请重新登录！');
   };
 
   return (
