@@ -1,12 +1,8 @@
 import React, { lazy } from 'react';
 import {
   BiDetail,
-  BiEdit,
   BiHomeAlt2,
-  BiListOl,
-  BiMessageRoundedDots,
   BiNews,
-  BiShareAlt,
   BiTaskX,
   BiTrophy
 } from 'react-icons/bi';
@@ -18,23 +14,11 @@ const Article = lazy(
   () =>
     import('@/pages/Admin/Article')
 );
-const Say = lazy(
-  () => import('@/pages/Admin/Say')
-);
-const Msg = lazy(
-  () => import('@/pages/Admin/Msg')
-);
-const Link = lazy(
-  () => import('@/pages/Admin/Link')
-);
 const Show = lazy(
   () => import('@/pages/Admin/Show')
 );
 const About = lazy(
   () => import('@/pages/Admin/About')
-);
-const Log = lazy(
-  () => import('@/pages/Admin/Log')
 );
 const Draft = lazy(
   () => import('@/pages/Admin/Draft')
@@ -69,34 +53,10 @@ export const useRoutes = (): RouteType[] => [
     icon: <BiDetail />
   },
   {
-    path: 'say',
-    disPlayName: '说说',
-    element: <Say />,
-    icon: <BiMessageRoundedDots />
-  },
-  {
-    path: 'msg',
-    disPlayName: '留言板',
-    element: <Msg />,
-    icon: <BiEdit />
-  },
-  {
-    path: 'link',
-    disPlayName: '友链',
-    element: <Link />,
-    icon: <BiShareAlt />
-  },
-  {
     path: 'show',
     disPlayName: '作品',
     element: <Show />,
     icon: <BiTrophy />
-  },
-  {
-    path: 'log',
-    disPlayName: '建站日志',
-    element: <Log />,
-    icon: <BiListOl />
   },
   {
     path: 'about',

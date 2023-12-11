@@ -7,17 +7,9 @@ import CountCard from '@/components/CountCard';
 import NoticeCard from '@/components/NoticeCard';
 import TagCard from '@/components/TagCard';
 import {
-  selectArticle,
-  selectLink,
-  selectLog,
-  selectMsg,
-  selectSay
+  selectArticle
 } from '@/redux/selectors';
 import { setArticleCount } from '@/redux/slices/articles';
-import { setLinkCount } from '@/redux/slices/links';
-import { setLogCount } from '@/redux/slices/logs';
-import { setMsgCount } from '@/redux/slices/msgs';
-import { setSayCount } from '@/redux/slices/says';
 import { _ } from '@/utils/cloudBase';
 import { siteTitle } from '@/utils/constant';
 import { DB } from '@/utils/dbConfig';
@@ -32,26 +24,6 @@ const Home: React.FC = () => {
       where: { post: _.eq(true) },
       selector: selectArticle,
       reducer: setArticleCount
-    },
-    {
-      DBName: DB.Say,
-      selector: selectSay,
-      reducer: setSayCount
-    },
-    {
-      DBName: DB.Msg,
-      selector: selectMsg,
-      reducer: setMsgCount
-    },
-    {
-      DBName: DB.Link,
-      selector: selectLink,
-      reducer: setLinkCount
-    },
-    {
-      DBName: DB.Log,
-      selector: selectLog,
-      reducer: setLogCount
     }
   ];
 
