@@ -1,56 +1,38 @@
-import { useMount, useRequest, useTitle } from 'ahooks';
+import { useTitle } from 'ahooks';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import AboutBase from '@/components/AboutBase';
-import { selectAbout } from '@/redux/selectors';
-import { setAboutMe, setAboutSite } from '@/redux/slices/about';
-import { getDataAPI } from '@/utils/apis/getData';
+import { getMdFileData } from '@/services/article';
 import { siteTitle } from '@/utils/constant';
-import { DB } from '@/utils/dbConfig';
-import { useUpdateData } from '@/utils/hooks/useUpdateData';
 
 import { Title } from '../titleConfig';
 import s from './index.module.scss';
 
 const About: React.FC = () => {
-  useTitle(`${siteTitle} | ${Title.About}`);
+  useTitle(`${Title.About} | ${siteTitle}`);
 
-  const dispatch = useDispatch();
-  const about = useSelector(selectAbout);
+  let aboutMe = '';
+  let aboutThisSite = '';
 
-  const { run } = useRequest(() => getDataAPI(DB.About), {
-    retryCount: 3,
-    manual: true,
-    onSuccess: res => {
-      const [aboutSite, aboutMe] = res.data;
-      dispatch(setAboutMe({ id: aboutMe._id, value: aboutMe.content }));
-      dispatch(setAboutSite({ id: aboutSite._id, value: aboutSite.content }));
-    }
-  });
+  // 请求 API 获取md文件数据
+  let { data: mdxContent } = getMdFileData(true, undefined, 'kangod');
 
-  useMount(() => {
-    if (!about.aboutMe.isDone || !about.aboutSite.isDone) {
-      run();
-    }
-  });
-
-  useUpdateData([
-    {
-      key: 'updated',
-      run: () => {
-        run();
-      }
-    }
-  ]);
+  // 在 mdxContent 中使用正则表达式
+  if (mdxContent) {
+    const aboutMeMatch = mdxContent.match(/##\s*关于我\s*👨‍💻([\s\S]*?)(?=##|$)/);
+    const aboutThisSiteMatch = mdxContent.match(/##\s*关于本站\s*🌊([\s\S]*?)(?=$)/);
+    // 提取匹配的部分
+    aboutMe = aboutMeMatch ? aboutMeMatch[1].trim() : '';
+    aboutThisSite = aboutThisSiteMatch ? aboutThisSiteMatch[1].trim() : '';
+  }
 
   return (
     <div className={s.aboutBox}>
       <div className={s.left}>
-        <AboutBase content={about.aboutMe.value} site='关于我' params={1} />
+        <AboutBase aboutContent={aboutMe} mdxContent={mdxContent!} site='关于我' params={1} />
       </div>
       <div className={s.right}>
-        <AboutBase content={about.aboutSite.value} site='关于本站' params={0} />
+        <AboutBase aboutContent={aboutThisSite} mdxContent={mdxContent!} site='关于本站' params={0} />
       </div>
     </div>
   );

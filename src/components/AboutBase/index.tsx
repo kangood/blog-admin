@@ -7,23 +7,24 @@ import s from './index.module.scss';
 
 interface Props {
   style?: object;
-  content: string;
+  aboutContent: string;
+  mdxContent: string;
   site: string;
   params: 0 | 1;
 }
 
-const AboutBase: React.FC<Props> = ({ style = {}, content = '', site, params }) => {
+const AboutBase: React.FC<Props> = ({ aboutContent = '', mdxContent = '', site, params }) => {
   const navigate = useNavigate();
 
   return (
     <>
       <PageHeader
         text='编辑'
-        onClick={() => navigate(`/admin/aboutEdit?me=${params}`)}
+        onClick={() => navigate(`/admin/aboutEdit?me=${params}`, { state: { mdxContent, aboutContent} })}
         render={() => <div className={s.site}>{site}</div>}
       />
       <div className={s.markDownContent}>
-        <MarkDown content={content} className={s.contentBox} />
+        <MarkDown content={aboutContent} className={s.contentBox} />
       </div>
     </>
   );

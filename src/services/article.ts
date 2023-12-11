@@ -66,12 +66,12 @@ export const useCountNotClassesArticle = () => {
 /**
  * 获取md文件数据
  */
-export const getMdFileData = (titleEng: string, enabled: boolean) => {
+export const getMdFileData = (enabled: boolean, titleEng?: string, author?: string) => {
     return useQuery<string>({
         // 不监听 titleEng 的变化，只加载一次
         // queryKey: ['listArticle', titleEng], 
         queryKey: ['listArticle'], 
-        queryFn: () => service.get('/article/getMdFileData', { params: { titleEng } }).then((res) => res.data),
+        queryFn: () => service.get('/article/getMdFileData', { params: { titleEng, author } }).then((res) => res.data),
         enabled
     })
 };
@@ -111,6 +111,17 @@ export const useDeleteArticle = () => {
         onSuccess: () => {
             globalSuccess();
             queryClient.invalidateQueries({ queryKey: ['listArticle'] });
+        }
+    });
+};
+
+// 修改关于信息，mdx 文件中的
+export const useUpdateAboutInfo = () => {
+    return useMutation({
+        mutationFn: async (content: { aboutContent: string; mdxContent: string }) => 
+            service.post('/article/updateAboutInfo', { ...content }),
+        onSuccess: () => {
+            globalSuccess();
         }
     });
 };

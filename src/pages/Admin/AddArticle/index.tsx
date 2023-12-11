@@ -45,7 +45,7 @@ const AddArticle: React.FC = () => {
   const [summary, setSummary] = useState(articleOutput.summary || '');
 
   // 请求 API 获取md文件数据
-  let { data: content } = getMdFileData(titleEng, !!id);
+  let { data: content } = getMdFileData(!!id, titleEng);
   let [localContent, setLocalContent] = useState<string>('');
   // 监听content变化，直到有值为止，防止异步请求结果返回，晚于初始页面渲染的时间
   useEffect(() => {
