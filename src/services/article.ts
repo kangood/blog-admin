@@ -5,6 +5,11 @@ import { queryClient } from '@/http/tanstack/react-query';
 import { globalSuccess } from '@/utils/arcod-extract';
 import { QueryResultType } from '@/utils/types';
 
+export interface TagCountType {
+    tag: string
+    count: number
+}
+
 export interface ArticleInputType {
     id?: number;
     title?: string;
@@ -69,6 +74,16 @@ export const useCountNotClassesArticle = () => {
         queryFn: () => service.get('/article/countNotClassesArticle').then((res) => res.data)
     })
 };
+
+/**
+ * 分组查询各个标签对应文章数量（只查询有标签的文章）
+ */
+export const countListArticleTag = () => {
+    return useQuery({
+        queryKey: ['countListArticleTag'], 
+        queryFn: () => service.get('/article/countListArticleTag').then((res) => res.data)
+    })
+  }
 
 /**
  * 获取md文件数据

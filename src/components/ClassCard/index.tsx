@@ -121,7 +121,7 @@ const ClassCard: React.FC = () => {
           {isLoadingA && isLoadingB  ? (
             <IconLoading />
           ) : (
-            [...articleClassesCountList!, {
+            [...articleClassesCountList || [], {
               classesId: noClassId,
               classesName: '未分类',
               count: countNotClassesArticle
