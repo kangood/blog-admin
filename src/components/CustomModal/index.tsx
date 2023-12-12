@@ -1,4 +1,4 @@
-import { Input, Modal } from '@arco-design/web-react';
+import { Input, Modal, Select } from '@arco-design/web-react';
 import React from 'react';
 
 import { DB } from '@/utils/dbConfig';
@@ -31,15 +31,34 @@ const CustomModal: React.FC<Props> = ({
   render
 }) => {
   const dataFilterRes = () =>
-    dataFilter.map(({ text, data, setData }, index) => (
-      <Input
-        size='large'
-        key={index}
-        addBefore={text}
-        value={data as string}
-        onChange={value => setData(value)}
-        className={s.modalInput}
-      />
+    dataFilter.map(({ text, data, setData, selectOptions }, index) => (
+      selectOptions ?
+        <Select
+          addBefore={text}
+          size='large'
+          className={s.tags}
+          maxTagCount={6}
+          mode='multiple'
+          allowCreate={false}
+          showSearch
+          allowClear
+          unmountOnExit={false}
+          value={data}
+          onChange={value => setData(value)}
+          options={selectOptions.map(item => ({
+            value: item,
+            label: item
+          }))}
+        />
+      :
+        <Input
+          size='large'
+          key={index}
+          addBefore={text}
+          value={data as string}
+          onChange={value => setData(value)}
+          className={s.modalInput}
+        />
     ));
 
   return (

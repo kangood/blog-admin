@@ -27,6 +27,7 @@ const Show: React.FC = () => {
   const [description, setDescription, resetDescription] = useResetState('');
   const [imgSrc, setImgSrc, resetImgSrc] = useResetState('');
   const [href, setHref, resetHref] = useResetState('');
+  const [techStack, setTechStack, resetTechStack] = useResetState<string[]>([]);
 
   // 图片展示
   const [imgUrl, setImgUrl] = useState('');
@@ -38,7 +39,7 @@ const Show: React.FC = () => {
   const { mutateAsync: updateMutateAsync } = useUpdateProject();
   const { mutateAsync: deleteMutateAsync } = useDeleteProject();
 
-  // 数据过滤器？
+  // 数据过滤器，用于编辑时 modal 窗口的数据填充和更新
   const dataFilter = [
     {
       text: '序号',
@@ -74,6 +75,39 @@ const Show: React.FC = () => {
       setData: setHref,
       reSet: resetHref,
       require: true
+    },
+    {
+      text: '技术栈',
+      data: techStack,
+      setData: setTechStack,
+      reSet: resetTechStack,
+      require: true,
+      selectOptions: [
+        'Python',
+        'TypeScript',
+        'JavaScript',
+        'Java',
+        'React',
+        'NextJS',
+        'Svelte',
+        'TensorFlow',
+        'PyTorch',
+        'Streamlit',
+        'PostgreSQL',
+        'MySQL',
+        'MongoDB',
+        'Firebase',
+        'FastAPI',
+        'Docker',
+        'Git',
+        'Prisma',
+        'Drizzle',
+        'TailwindCSS',
+        'ShadcnUI',
+        'Vite',
+        'AntDesign',
+        'TanStackQuery'
+      ]
     }
   ];
 
@@ -100,6 +134,7 @@ const Show: React.FC = () => {
         setImgSrc(item.imgSrc || '');
         setDescription(item.description || '');
         setHref(item.href || '');
+        setTechStack(item.techStack || []);
         setSortValue(item.sortValue?.toString() || '');
         break;
       }

@@ -1,0 +1,10 @@
+.tableTechStack {
+  .techStackItem {
+    margin-right: 4px;
+    margin-top: 4px;
+  }
+
+  .techStackItem:last-child {
+    margin-right: 0;
+  }
+}

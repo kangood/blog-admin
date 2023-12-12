@@ -1,6 +1,7 @@
 import { Button, Popconfirm } from '@arco-design/web-react';
 import React from 'react';
 
+import TableTechStack from '@/components/TableTechStack';
 import { DeleteProps } from '@/utils/hooks/useTableData';
 
 import s from './index.module.scss';
@@ -45,6 +46,12 @@ export const useColumns = ({
   {
     title: '描述',
     dataIndex: 'description'
+  },
+  {
+    title: '技术栈',
+    dataIndex: 'techStack',
+    render: (techStacks: string[]) => <TableTechStack techStacks={techStacks} />,
+    width: 300
   },
   {
     title: '操作',

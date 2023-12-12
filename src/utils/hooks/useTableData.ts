@@ -24,6 +24,7 @@ export interface DataFilterProps {
   setData: any;
   reSet: any;
   require: boolean;
+  selectOptions?: string[];
 }
 
 interface Props {
