@@ -44,7 +44,7 @@ export const useGetAllTag = () => {
  */
 export const useCountAllTag = () => {
     const { data } = useQuery<QueryResultType<TagOutputType>>({
-        queryKey: ['countAllTag'], 
+        queryKey: ['listTag'], 
         queryFn: () => service.get('/tag').then((res) => res.data)
     })
     return data?.meta.totalItems;

@@ -45,12 +45,12 @@
     flex: 2;
     margin-right: 10px;
   }
-  .classesContainer {
+  .tagsContainer {
     height: 100%;
     flex: 1;
     margin-right: 10px;
   }
-  .tagsNoticeContainer {
+  .classesNoticeContainer {
     height: 100%;
     flex: 1;
 
@@ -58,7 +58,7 @@
       height: 160px;
       margin-bottom: 10px;
     }
-    .tagsContainer {
+    .classesContainer {
       height: calc(100% - 160px - 10px);
     }
   }

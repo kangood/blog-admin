@@ -58,15 +58,15 @@ const Home: React.FC = () => {
         <div className={s.chartContainer}>
           <ChartCard />
         </div>
-        <div className={s.classesContainer}>
-          <ClassCard />
+        <div className={s.tagsContainer}>
+          <TagCard />
         </div>
-        <div className={s.tagsNoticeContainer}>
+        <div className={s.classesNoticeContainer}>
           <div className={s.noticeContainer} >
             <NoticeCard />
           </div>
-          <div className={s.tagsContainer}>
-            <TagCard />
+          <div className={s.classesContainer}>
+            <ClassCard />
           </div>
         </div>
       </div>
