@@ -73,7 +73,7 @@ export const useColumns = ({
         </Button>
         <Popconfirm
           position='br'
-          title='确定要删除该作品吗？'
+          title='确定要删除该项目吗？'
           onOk={() => handleDelete(id, deleteProps)}
           okText='Yes'
           cancelText='No'

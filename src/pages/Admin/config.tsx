@@ -54,7 +54,7 @@ export const useRoutes = (): RouteType[] => [
   },
   {
     path: 'show',
-    disPlayName: '作品',
+    disPlayName: '项目',
     element: <Show />,
     icon: <BiTrophy />
   },

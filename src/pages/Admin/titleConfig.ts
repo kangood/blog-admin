@@ -1,6 +1,6 @@
 export enum Title {
   Articles = '文章',
-  Show = '作品',
+  Show = '项目',
   About = '关于',
   Drafts = '草稿箱',
   AddArticle = '新建文章',

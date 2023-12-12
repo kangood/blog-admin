@@ -37,7 +37,7 @@ export const failText = '操作失败，请重试！';
 
 // 分页：默认每页数量
 export const defaultPageSize = 9;
-// 作品 分页
+// 项目 分页
 export const showPageSize = 6;
 // 建站日志 分页
 export const logPageSize = 10;

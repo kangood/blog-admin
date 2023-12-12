@@ -172,7 +172,7 @@ const Show: React.FC = () => {
 
   return (
     <>
-      <PageHeader text='添加作品' onClick={() => setIsModalOpen(true)} />
+      <PageHeader text='添加项目' onClick={() => setIsModalOpen(true)} />
       <MyTable
         loading={isLoading}
         columns={columns}
