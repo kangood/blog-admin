@@ -20,7 +20,7 @@ import { reduxMap } from '../reduxMap';
 
 export interface DataFilterProps {
   text: string;
-  data: string | string[];
+  data: string | number | string[];
   setData: any;
   reSet: any;
   require: boolean;

@@ -6,8 +6,8 @@ import { DeleteProps } from '@/utils/hooks/useTableData';
 import s from './index.module.scss';
 
 interface Props {
-  handleEdit: (id: string) => void;
-  handleDelete: (id: string, props: DeleteProps) => void;
+  handleEdit: (id: number) => void;
+  handleDelete: (id: number, props: DeleteProps) => void;
   deleteProps: DeleteProps;
   onClickImg: (url: string) => void;
 }
@@ -20,52 +20,54 @@ export const useColumns = ({
 }: Props) => [
   {
     title: '序号',
-    dataIndex: 'order'
+    dataIndex: 'sortValue'
   },
   {
     title: '封面',
-    dataIndex: 'cover',
+    dataIndex: 'imgSrc',
     render: (url: string) => (
       <div className={s.tableCoverBox}>
-        <img
-          src={url}
-          alt='cover'
-          className={s.tableCover}
-          onClick={() => onClickImg(url)}
-        />
+        {url &&
+          <img
+            src={url}
+            alt='cover'
+            className={s.tableCover}
+            onClick={() => onClickImg(url)}
+          />
+        }
       </div>
     )
   },
   {
     title: '名称',
-    dataIndex: 'name'
+    dataIndex: 'title'
   },
   {
     title: '描述',
-    dataIndex: 'descr'
+    dataIndex: 'description'
   },
   {
     title: '操作',
-    render: (_: any, { _id, link }: { _id: string; link: string }) => (
+    render: (_: any, { id, href }: { id: number; href: string }) => (
       <>
         <Button
           type='primary'
           style={{ marginRight: 10 }}
-          onClick={() => window.open(link)}
+          onClick={() => window.open(href)}
         >
           查看
         </Button>
         <Button
           style={{ marginRight: 10 }}
           type='primary'
-          onClick={() => handleEdit(_id)}
+          onClick={() => handleEdit(id)}
         >
-          更新
+          编辑
         </Button>
         <Popconfirm
           position='br'
           title='确定要删除该作品吗？'
-          onOk={() => handleDelete(_id, deleteProps)}
+          onOk={() => handleDelete(id, deleteProps)}
           okText='Yes'
           cancelText='No'
         >

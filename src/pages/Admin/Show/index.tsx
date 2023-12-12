@@ -5,65 +5,74 @@ import CustomModal from '@/components/CustomModal';
 import ImgView from '@/components/ImgView';
 import MyTable from '@/components/MyTable';
 import PageHeader from '@/components/PageHeader';
+import { ProjectInputType, useCreateProject, useDeleteProject, uselistProject, useUpdateProject } from '@/services/project';
 import { showPageSize, siteTitle } from '@/utils/constant';
 import { DB } from '@/utils/dbConfig';
 import { usePage } from '@/utils/hooks/usePage';
-import { useTableData } from '@/utils/hooks/useTableData';
 
 import { Title } from '../titleConfig';
 import { useColumns } from './config';
 
 const Show: React.FC = () => {
-  useTitle(`${siteTitle} | ${Title.Show}`);
+  useTitle(`${Title.Show} | ${siteTitle}`);
 
   const { page, setPage } = usePage();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
-  const [id, setId, resetId] = useResetState('');
-  const [order, setOrder, resetOrder] = useResetState('');
-  const [name, setName, resetName] = useResetState('');
-  const [descr, setDescr, resetDescr] = useResetState('');
-  const [cover, setCover, resetCover] = useResetState('');
-  const [link, setLink, resetLink] = useResetState('');
+  // 定义表格字段的状态，用于编辑时 "手动" 填充值，也方面后续修改
+  const [id, setId, resetId] = useResetState(0);
+  const [sortValue, setSortValue, resetSortValue] = useResetState('');
+  const [title, setTitle, resetTitle] = useResetState('');
+  const [description, setDescription, resetDescription] = useResetState('');
+  const [imgSrc, setImgSrc, resetImgSrc] = useResetState('');
+  const [href, setHref, resetHref] = useResetState('');
 
+  // 图片展示
   const [imgUrl, setImgUrl] = useState('');
   const [isViewShow, setIsViewShow] = useState(false);
 
+  // API hooks
+  const { data, isLoading } = uselistProject();
+  const { mutateAsync: createMutateAsync } = useCreateProject();
+  const { mutateAsync: updateMutateAsync } = useUpdateProject();
+  const { mutateAsync: deleteMutateAsync } = useDeleteProject();
+
+  // 数据过滤器？
   const dataFilter = [
     {
       text: '序号',
-      data: order,
-      setData: setOrder,
-      reSet: resetOrder,
+      data: sortValue,
+      setData: setSortValue,
+      reSet: resetSortValue,
       require: true
     },
     {
       text: '名称',
-      data: name,
-      setData: setName,
-      reSet: resetName,
+      data: title,
+      setData: setTitle,
+      reSet: resetTitle,
       require: true
     },
     {
       text: '描述',
-      data: descr,
-      setData: setDescr,
-      reSet: resetDescr,
+      data: description,
+      setData: setDescription,
+      reSet: resetDescription,
       require: true
     },
     {
       text: '封面',
-      data: cover,
-      setData: setCover,
-      reSet: resetCover,
+      data: imgSrc,
+      setData: setImgSrc,
+      reSet: resetImgSrc,
       require: true
     },
     {
       text: '链接',
-      data: link,
-      setData: setLink,
-      reSet: resetLink,
+      data: href,
+      setData: setHref,
+      reSet: resetHref,
       require: true
     }
   ];
@@ -81,34 +90,25 @@ const Show: React.FC = () => {
     clearData();
   };
 
-  const { data, total, loading, handleDelete, modalOk } = useTableData({
-    type: DB.Show,
-    DBName: DB.Show,
-    dataFilter,
-    page,
-    setPage,
-    modalCancel,
-    sortKey: 'order',
-    isAsc: true,
-    pageSize: showPageSize
-  });
-
-  const handleEdit = (id: string) => {
+  const handleEdit = (id: number) => {
     setIsModalOpen(true);
     setIsEdit(true);
     setId(id);
-    for (const item of data) {
-      const { _id, cover, descr, link, name, order } = item;
-      if (id === _id) {
-        setCover(cover);
-        setDescr(descr);
-        setLink(link);
-        setName(name);
-        setOrder(order);
+    for (const item of data!.items) {
+      if (id === item.id) {
+        setTitle(item.title);
+        setImgSrc(item.imgSrc || '');
+        setDescription(item.description || '');
+        setHref(item.href || '');
+        setSortValue(item.sortValue?.toString() || '');
         break;
       }
     }
   };
+
+  const handleDelete = (id: number) => {
+    deleteMutateAsync([id]);
+  }
 
   const columns = useColumns({
     handleEdit,
@@ -124,24 +124,25 @@ const Show: React.FC = () => {
   });
 
   const handleModalOk = () => {
-    const data = { order: Number(order), name, descr, cover, link };
-    modalOk({
-      isEdit,
-      id,
-      data,
-      page,
-      isClearAll: true
-    });
+    const data: ProjectInputType = { sortValue: Number(sortValue), title, description, imgSrc, href };
+    if (isEdit) {
+      data.id = id;
+      updateMutateAsync(data);
+    } else {
+      createMutateAsync(data);
+    }
+    setIsModalOpen(false);
+    clearData();
   };
 
   return (
     <>
       <PageHeader text='添加作品' onClick={() => setIsModalOpen(true)} />
       <MyTable
-        loading={loading}
+        loading={isLoading}
         columns={columns}
-        data={data}
-        total={total}
+        data={data?.items || []}
+        total={data?.meta?.totalItems || 0}
         page={page}
         pageSize={showPageSize}
         setPage={setPage}
