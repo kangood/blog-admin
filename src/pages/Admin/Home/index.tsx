@@ -1,45 +1,57 @@
+import { Typography } from '@arco-design/web-react';
+import Card from '@arco-design/web-react/es/Card';
+import Col from '@arco-design/web-react/es/Grid/col';
+import Row from '@arco-design/web-react/es/Grid/row';
 import { useTitle } from 'ahooks';
 import React from 'react';
 
+import data from '@/assets/images/data.png'
+import data2 from '@/assets/images/data2.png'
 import ChartCard from '@/components/ChartCard';
 import ClassCard from '@/components/ClassCard';
-import CountCard from '@/components/CountCard';
 import NoticeCard from '@/components/NoticeCard';
 import TagCard from '@/components/TagCard';
-import {
-  selectArticle
-} from '@/redux/selectors';
-import { setArticleCount } from '@/redux/slices/articles';
-import { _ } from '@/utils/cloudBase';
+import { useCountAllArticle } from '@/services/article';
+import { useCountAllTag } from '@/services/tag';
 import { siteTitle } from '@/utils/constant';
-import { DB } from '@/utils/dbConfig';
 
 import s from './index.module.scss';
 
 const Home: React.FC = () => {
   useTitle(siteTitle);
-  const countCards = [
-    {
-      DBName: DB.Article,
-      where: { post: _.eq(true) },
-      selector: selectArticle,
-      reducer: setArticleCount
-    }
-  ];
+  const articleCount = useCountAllArticle();
+  const tagCount = useCountAllTag();
 
   return (
     <>
       {/* 统计卡片区 */}
       <div className={s.countCardContainer}>
-        {countCards.map(({ DBName, where = {}, selector, reducer }, index) => (
-          <CountCard
-            key={index}
-            DBName={DBName}
-            where={where}
-            selector={selector}
-            reducer={reducer}
-          />
-        ))}
+        <Row justify="start" className="dashboard-row">
+          <Col span={12}>
+            <Card
+              className={s.article}
+              bordered={false}
+            >
+              <div>
+                <Typography.Title heading={6}>文章总量</Typography.Title>
+                <Typography.Text>{articleCount}</Typography.Text>
+              </div>
+              <img src={data} />
+            </Card>
+          </Col>
+          <Col span={12}>
+            <Card
+              className={s.category}
+              bordered={false}
+            >
+              <div>
+                <Typography.Title heading={6}>标签总量</Typography.Title>
+                <Typography.Text>{tagCount}</Typography.Text>
+              </div>
+              <img src={data2} />
+            </Card>
+          </Col>
+        </Row>
       </div>
       {/* 扇形图、分类、标签、公告 */}
       <div className={s.homeBigContainer}>

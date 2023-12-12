@@ -40,6 +40,17 @@ export const useGetAllTag = () => {
 };
 
 /**
+ * 查询标签的总数量
+ */
+export const useCountAllTag = () => {
+    const { data } = useQuery<QueryResultType<TagOutputType>>({
+        queryKey: ['countAllTag'], 
+        queryFn: () => service.get('/tag').then((res) => res.data)
+    })
+    return data?.meta.totalItems;
+}
+
+/**
  * 新建
  */
 export const useCreateTag = () => {

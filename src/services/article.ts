@@ -54,6 +54,13 @@ export const useListArticle = (values?: ArticleInputType) => {
 };
 
 /**
+ * 查询文章的总数量
+ */
+export const useCountAllArticle = (values?: ArticleInputType) => {
+    return useListArticle(values).data?.meta.totalItems;
+};
+
+/**
  * 查询未分类的文章数量
  */
 export const useCountNotClassesArticle = () => {

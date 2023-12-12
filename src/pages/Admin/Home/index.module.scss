@@ -2,7 +2,38 @@
   height: 160px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+
+  .article {
+    background: linear-gradient(180deg,#f2f9fe,#e6f4fe);
+  }
+
+  .category {
+    background: linear-gradient(180deg,#f5fef2,#e6feee);
+  }
+
+  img {
+    width: 194px;
+    height: 80px;
+  }
+
+  :global(.dashboard-row .arco-card) {
+    height: 140px;
+    margin-right: 20px;
+  }
+
+  :global(.dashboard-row .arco-card-body) {
+    display: flex;
+    justify-content: space-between;
+    min-height: 100px;
+    padding: 16px 20px 20px;
+
+    span {
+      font-size: 18px;
+      margin-bottom: 4px;
+      margin-top: 24px;
+      display: block;
+    }
+  }
 }
 
 .homeBigContainer {
