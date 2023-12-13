@@ -1,54 +1,66 @@
+import { Chart, Pie } from '@ant-design/plots';
 import { IconLoading } from '@arco-design/web-react/icon';
 import classNames from 'classnames';
-import { PieChart } from 'echarts/charts';
-import { LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
-import * as echarts from 'echarts/core';
-import { LabelLayout } from 'echarts/features';
-import { CanvasRenderer } from 'echarts/renderers';
-import ReactEChartsCore from 'echarts-for-react/lib/core';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useChartData } from './config';
+import { useCountListArticleTag } from '@/services/article';
+
 import s from './index.module.scss';
 
-echarts.use([
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  PieChart,
-  CanvasRenderer,
-  LabelLayout
-]);
-
 const ChartCard: React.FC = () => {
-  const { option, loading } = useChartData();
 
+  const { data: countListArticleTag, isLoading } = useCountListArticleTag();
   const navigate = useNavigate();
 
-  const onEvents = {
-    click: (params: any) => {
-      const classText = params.data.name;
-      navigate(`/admin/article?searchClass=${encodeURIComponent(classText)}`);
+  const config = {
+    data: countListArticleTag,
+    angleField: 'count',
+    colorField: 'tag',
+    paddingRight: 80,
+    paddingTop: 80,
+    paddingBottom: 40,
+    innerRadius: 0.6,
+    label: {
+      text: (d) => `${d.tag} - ${d.count}`,
+      position: 'spider',
+      connectorStroke: 'black',
+      line: false,
+      style: {
+        fontSize: 14,
+        fontWeight: 'bold'
+      },
+      transform: [
+        {
+          type: 'overlapDodgeY'
+        }
+      ]
+    },
+    legend: {
+      color: {
+        title: false,
+        position: 'right',
+        rowPadding: 5
+      }
+    },
+    onReady: ({ chart }: Chart)=> {
+      // chart.on('interval:pointerover', (event) => alert('pointerover'));
+      // chart.on('interval:pointerout', (event) => alert('pointerout'));
+      chart.on('interval:click', (event) => {
+        console.log(123, event);
+        const classText = event.data.data.tag;
+        navigate(`/admin/article?searchTag=${encodeURIComponent(classText)}`);
+      });
     }
   };
 
   return (
-    <div className={classNames(s.chartBox, { [s.loadingCenter]: loading })}>
+    <div className={classNames(s.chartBox, { [s.loadingCenter]: isLoading })}>
       <div className={s.chartTitle}>文章概览</div>
-      {loading ? (
+      {isLoading ? (
         <IconLoading className={s.loading} />
       ) : (
-        <ReactEChartsCore
-          style={{
-            height: '100%'
-          }}
-          echarts={echarts}
-          option={option}
-          notMerge={true}
-          lazyUpdate={true}
-          onEvents={onEvents}
-        />
+        <Pie {...config} />
       )}
     </div>
   );

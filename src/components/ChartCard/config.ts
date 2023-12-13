@@ -1,4 +1,4 @@
-import { countListArticleTag } from '@/services/article';
+import { useCountListArticleTag } from '@/services/article';
 
 interface TagCountType {
   tag: string;
@@ -6,7 +6,7 @@ interface TagCountType {
 }
 
 export const useChartData = () => {
-  const { data: tagCountList, isLoading: tagCountLoading } = countListArticleTag();
+  const { data: tagCountList, isLoading: tagCountLoading } = useCountListArticleTag();
 
   const formatData = (tagCountList: TagCountType[]) => {
     if (tagCountList === undefined) return [];

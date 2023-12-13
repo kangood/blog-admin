@@ -78,7 +78,7 @@ export const useCountNotClassesArticle = () => {
 /**
  * 分组查询各个标签对应文章数量（只查询有标签的文章）
  */
-export const countListArticleTag = () => {
+export const useCountListArticleTag = () => {
     return useQuery({
         queryKey: ['countListArticleTag'], 
         queryFn: () => service.get('/article/countListArticleTag').then((res) => res.data)
