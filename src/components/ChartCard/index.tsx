@@ -22,7 +22,7 @@ const ChartCard: React.FC = () => {
     paddingBottom: 40,
     innerRadius: 0.6,
     label: {
-      text: (d) => `${d.tag} - ${d.count}`,
+      text: (d: { tag: string; count: string }) => `${d.tag} - ${d.count}`,
       position: 'spider',
       connectorStroke: 'black',
       line: false,
@@ -46,7 +46,7 @@ const ChartCard: React.FC = () => {
     onReady: ({ chart }: Chart)=> {
       // chart.on('interval:pointerover', (event) => alert('pointerover'));
       // chart.on('interval:pointerout', (event) => alert('pointerout'));
-      chart.on('interval:click', (event) => {
+      chart.on('interval:click', (event: { data: { data: { tag: string } }}) => {
         console.log(123, event);
         const classText = event.data.data.tag;
         navigate(`/admin/article?searchTag=${encodeURIComponent(classText)}`);
