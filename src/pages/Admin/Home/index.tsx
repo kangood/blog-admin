@@ -9,6 +9,7 @@ import data from '@/assets/images/data.png'
 import data2 from '@/assets/images/data2.png'
 import ChartCard from '@/components/ChartCard';
 import ClassCard from '@/components/ClassCard';
+import FamiliarTechStack from '@/components/FamiliarTechStack';
 import NoticeCard from '@/components/NoticeCard';
 import TagCard from '@/components/TagCard';
 import { useCountAllArticle } from '@/services/article';
@@ -27,7 +28,7 @@ const Home: React.FC = () => {
       {/* 统计卡片区 */}
       <div className={s.countCardContainer}>
         <Row justify="start" className="dashboard-row">
-          <Col span={12}>
+          <Col span={6}>
             <Card
               className={s.article}
               bordered={false}
@@ -39,7 +40,7 @@ const Home: React.FC = () => {
               <img src={data} />
             </Card>
           </Col>
-          <Col span={12}>
+          <Col span={6}>
             <Card
               className={s.category}
               bordered={false}
@@ -50,6 +51,9 @@ const Home: React.FC = () => {
               </div>
               <img src={data2} />
             </Card>
+          </Col>
+          <Col span={12}>
+            <FamiliarTechStack />
           </Col>
         </Row>
       </div>

@@ -56,7 +56,7 @@ const ChartCard: React.FC = () => {
 
   return (
     <div className={classNames(s.chartBox, { [s.loadingCenter]: isLoading })}>
-      <div className={s.chartTitle}>文章概览</div>
+      <div className={s.chartTitle}>文章统计</div>
       {isLoading ? (
         <IconLoading className={s.loading} />
       ) : (
