@@ -27,13 +27,16 @@ const AboutEdit: React.FC = () => {
   const contentData: { aboutContent: string, mdxContent: string, isMe: boolean } = location.state;
   const [content, setContent] = useState(contentData.aboutContent);
   // 更新关于信息
-  const updateAbout = () => {
+  const updateAbout = async () => {
     if (!content) {
         Message.info('请写点什么再更新！');
         return;
     }
+    // put isMe
     contentData.isMe = isMe;
-    mutateAsync(contentData)
+    // update aboutContent
+    contentData.aboutContent = content;
+    await mutateAsync(contentData);
     navigate(`/admin/about?updated=1`);
   };
 
