@@ -27,35 +27,33 @@ const Home: React.FC = () => {
     <>
       {/* 统计卡片区 */}
       <div className={s.countCardContainer}>
-        <Row justify="start" className="dashboard-row">
-          <Col span={6}>
-            <Card
-              className={s.article}
-              bordered={false}
-            >
-              <div>
-                <Typography.Title heading={6}>文章总量</Typography.Title>
-                <Typography.Text>{articleCount}</Typography.Text>
+        <div className={s.dashboardRow}>
+          <div className={s.col}>
+            <div className={s.card}>
+              <div className={s.body}>
+                <div>
+                  <Typography.Title heading={6}>文章总量</Typography.Title>
+                  <Typography.Text>{articleCount}</Typography.Text>
+                </div>
+                <img src={data} />
               </div>
-              <img src={data} />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card
-              className={s.category}
-              bordered={false}
-            >
-              <div>
-                <Typography.Title heading={6}>标签总量</Typography.Title>
-                <Typography.Text>{tagCount}</Typography.Text>
+            </div>
+          </div>
+          <div className={s.col}>
+            <div className={s.card}>
+              <div className={s.body}>
+                <div>
+                  <Typography.Title heading={6}>标签总量</Typography.Title>
+                  <Typography.Text>{tagCount}</Typography.Text>
+                </div>
+                <img src={data2} />
               </div>
-              <img src={data2} />
-            </Card>
-          </Col>
-          <Col span={12}>
+            </div>
+          </div>
+          <div className={s.col}>
             <FamiliarTechStack />
-          </Col>
-        </Row>
+          </div>
+        </div>
       </div>
       {/* 扇形图、分类、标签、公告 */}
       <div className={s.homeBigContainer}>
