@@ -60,6 +60,7 @@ const ChartCard: React.FC = () => {
       },
       interactions: [{ type: 'element-selected' }, { type: 'element-active' }]
     }
+    // @ts-ignore 「legend:false」是没错的，忽略
     const piePlot = new Pie(ref.current, cfg);
 
     // 点击事件，跳转文章页
