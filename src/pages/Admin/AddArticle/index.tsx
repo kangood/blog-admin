@@ -137,7 +137,7 @@ const AddArticle: React.FC = () => {
       classes,
       postedAt: localDate,
       summary,
-      url: `https://panlore.top/blog/${titleEng}`,
+      url: `https://kangod.top/blog/${titleEng}`,
       post: type === 'post'
     };
 
