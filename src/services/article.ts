@@ -25,6 +25,7 @@ export interface ArticleInputType {
     page?: number;
     limit?: number;
     trash?: boolean;
+    orderBy?: string;
 }
 
 export interface ArticleOutputType {

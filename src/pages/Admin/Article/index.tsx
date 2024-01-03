@@ -34,12 +34,13 @@ const Article: React.FC = () => {
   } = useMyParams();
 
   // 分页列表请求参数
-  const searchParams = {
+  const searchParams: ArticleInputType = {
     tags: searchTag.join(','),
     title: searchTitle,
     classes: searchClass,
     page,
-    limit: defaultPageSize
+    limit: defaultPageSize,
+    orderBy: 'postedAt'
   };
 
   // 后端 api 请求 hooks
