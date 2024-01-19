@@ -20,12 +20,6 @@
     "ie >= 9",
     "not op_mini all"
   ],
-  "husky": {
-    "hooks": {
-      "pre-commit": "pnpm eslint",
-      "commit-msg": "pnpm commitlint"
-    }
-  },
   "dependencies": {
     "@ahooksjs/use-url-state": "^3.5.1",
     "@arco-design/web-react": "^2.47.0",
