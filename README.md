@@ -1,4 +1,4 @@
-## Blog Admin React
+## Blog Admin
 
 技术栈：
 
@@ -9,6 +9,6 @@
 - 状态库：TanStack Query
 - Markdown渲染：Marked
 
-博客前台：[Blog Web Next.js](https://github.com/KangodYan/blog-web-nextjs)
+博客前台：[Blog Web](https://github.com/KangodYan/blog-web)
 <br/><br/>
-后端 API：[Blog Api NestJS](https://github.com/KangodYan/blog-api-nestjs)
+后端 API：[Blog Api](https://github.com/KangodYan/blog-api)
