@@ -106,6 +106,9 @@ const Show: React.FC = () => {
         'ShadcnUI',
         'Vite',
         'AntDesign',
+        'ArcoDesign',
+        'Redux',
+        'NestJS',
         'TanStackQuery'
       ]
     }
