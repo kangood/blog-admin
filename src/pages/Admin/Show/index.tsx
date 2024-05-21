@@ -162,7 +162,7 @@ const Show: React.FC = () => {
   });
 
   const handleModalOk = () => {
-    const data: ProjectInputType = { sortValue: Number(sortValue), title, description, imgSrc, href };
+    const data: ProjectInputType = { sortValue: Number(sortValue), title, description, imgSrc, href, techStack };
     if (isEdit) {
       data.id = id;
       updateMutateAsync(data);
