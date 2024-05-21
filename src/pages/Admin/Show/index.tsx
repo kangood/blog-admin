@@ -109,6 +109,7 @@ const Show: React.FC = () => {
         'ArcoDesign',
         'Redux',
         'NestJS',
+        'Zustand',
         'TanStackQuery'
       ]
     }

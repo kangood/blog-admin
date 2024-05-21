@@ -1,5 +1,7 @@
 import React from 'react';
 
+import bear from '@/assets/images/bear.png'
+
 import styles from './index.module.scss';
 
 export type TechStack =
@@ -21,6 +23,7 @@ export type TechStack =
   | 'AntDesign'
   | 'ArcoDesign'
   | 'Redux'
+  | 'Zustand'
   | 'NestJS'
   | 'TypeORM'
 
@@ -43,6 +46,7 @@ export const techStack: TechStack[] = [
   'AntDesign',
   'ArcoDesign',
   'Redux',
+  'Zustand',
   'NestJS',
   'TypeORM'
 ]
@@ -682,6 +686,12 @@ export const Redux = () => {
   )
 }
 
+export const Zustand = () => {
+  return (
+    <img src={bear} style={{ background: 'white' }} />
+  )
+}
+
 export const NestJS = () => {
   return (
     <svg
@@ -751,6 +761,7 @@ export const DevIcons = {
   AntDesign: AntDesign,
   ArcoDesign: ArcoDesign,
   Redux: Redux,
+  Zustand: Zustand,
   NestJS: NestJS,
   TanStackQuery: TanStackQuery
 }
