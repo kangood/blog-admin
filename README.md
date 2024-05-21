@@ -6,7 +6,8 @@
 - 构建工具：Vite
 - CSS：Sass + Less
 - UI 组件：Arco Design
-- 状态库：TanStack Query
+- 状态管理：Redux
+- 数据获取：TanStack Query
 - Markdown渲染：Marked
 
 博客前台：[Blog Web](https://github.com/KangodYan/blog-web)
