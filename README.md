@@ -10,6 +10,6 @@
 - 数据获取：TanStack Query
 - Markdown渲染：Marked
 
-博客前台：[Blog Web](https://github.com/KangodYan/blog-web)
+博客前台：[Blog Web](https://github.com/kangood/blog-web)
 <br/><br/>
-后端 API：[Blog Api](https://github.com/KangodYan/blog-api)
+后端 API：[Blog Api](https://github.com/kangood/blog-api)
