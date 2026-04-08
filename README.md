@@ -13,3 +13,6 @@
 博客前台：[Blog Web](https://github.com/kangood/blog-web)
 <br/><br/>
 后端 API：[Blog Api](https://github.com/kangood/blog-api)
+
+## 鸣谢
+[lzxjack/react-blog-admin](https://github.com/lzxjack/react-blog-admin)
